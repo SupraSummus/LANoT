@@ -277,11 +277,12 @@ $(foreach target, $(TARGETS), $(call define_target, $(target)))
 
 .PHONY: flash flash_softdevice erase
 
+_build/pkg.zip: _build/nrf52840_xxaa.hex
+	nrfutil pkg generate --application $^ --hw-version 52 --sd-req 0xB6 --application-version 1 --key-file fanstel.pem $@
+
 # Flash the program
-flash: default
-	@echo Flashing: $(OUTPUT_DIRECTORY)/nrf52840_xxaa.hex
-	nrfjprog -f nrf52 --program $(OUTPUT_DIRECTORY)/nrf52840_xxaa.hex --sectorerase
-	nrfjprog -f nrf52 --reset
+flash: _build/pkg.zip
+	nrfutil dfu usb-serial --package $^ --port /dev/ttyACM0
 
 # Flash softdevice
 flash_softdevice:

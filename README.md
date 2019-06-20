@@ -1,3 +1,5 @@
+Environment for [Fanstel BT840x/USB840x modules](https://www.fanstel.com/bt840) using [nRF52840 SoC](https://www.nordicsemi.com/?sc_itemid=%7B2DC10BA5-A76E-40F8-836E-E2FC65803A71%7D).
+
 Compilation
 -----------
 
@@ -22,7 +24,15 @@ See also [the tutorial I was following](https://devzone.nordicsemi.com/nordic/no
 Flashing
 --------
 
-TODO
+For flashing you'll need `nrfutil`. It's [available from pypi](https://pypi.org/project/nrfutil/) - but requires python2. If you have `pipenv` installed, you can simply
 
-tools https://www.nordicsemi.com/Software-and-Tools/Development-Tools/nRF5-Command-Line-Tools/Download#infotabs
+    pipenv install
+    pipenv shell  # to enter the environment
 
+Then to program attached device do
+
+    make flash
+
+It's expecting device's usb-uart bootloader to be listening at `/dev/ttyACM0`.
+
+Binaries are signed using Fanstel disclosed key.
