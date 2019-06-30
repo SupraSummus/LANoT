@@ -1,4 +1,5 @@
 _build
-sdk
+sdk/
 tools
 nrfconnect
+FreeRTOSv10.2.1/
