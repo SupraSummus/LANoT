@@ -7,7 +7,7 @@ Install arm-none-eabi gcc toolchain and C standard library. For arch linux it's
 
     pacman -S arm-none-eabi-gcc arm-none-eabi-newlib
 
-Download and unpack nRF5 SDK to `./sdk` dir. I'm working on [current newest version](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip).
+Download and unpack [nRF5 SDK](https://www.nordicsemi.com/Software-and-Tools/Software/nRF5-SDK) to `./nRF5_SDK_15.3.0_59ac345` dir. I'm working on [current newest version](https://developer.nordicsemi.com/nRF5_SDK/nRF5_SDK_v15.x.x/nRF5_SDK_15.3.0_59ac345.zip).
 
 You need to configure toolchain path for SDK. Edit `sdk/components/toolchain/gcc/Makefile.posix`. Mine looks like this:
 
@@ -16,6 +16,8 @@ You need to configure toolchain path for SDK. Edit `sdk/components/toolchain/gcc
     # version obtained by `arm-none-eabi-gcc --version`
     GNU_VERSION ?= 9.1.0
     GNU_PREFIX ?= arm-none-eabi
+
+Download and unpack [freeRTOS](https://www.freertos.org/) source to `./FreeRTOSv10.2.1` dir.
 
 Then you should be able to succesffuly run `make`.
 
