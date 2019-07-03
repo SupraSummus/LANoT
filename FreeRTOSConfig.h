@@ -30,10 +30,7 @@
 #ifndef FREERTOS_CONFIG_H
 #define FREERTOS_CONFIG_H
 
-#ifdef SOFTDEVICE_PRESENT
-#include "nrf_soc.h"
-#endif
-#include "app_util_platform.h"
+#include "nrf52840.h"
 
 /*-----------------------------------------------------------
  * Possible configurations for system timer
@@ -53,7 +50,7 @@
  * See http://www.freertos.org/a00110.html.
  *----------------------------------------------------------*/
 
-#define configTICK_SOURCE                                                         FREERTOS_USE_RTC
+#define configTICK_SOURCE                                                         FREERTOS_USE_SYSTICK
 
 #define configUSE_PREEMPTION                                                      1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION                                   0
@@ -105,9 +102,8 @@
 
 
 /* Define to trap errors during development. */
-#if defined(DEBUG_NRF) || defined(DEBUG_NRF_USER)
-#define configASSERT( x )                                                         ASSERT(x)
-#endif
+#include <assert.h>
+#define configASSERT( x )                                                         assert(x)
 
 /* FreeRTOS MPU specific definitions. */
 #define configINCLUDE_APPLICATION_DEFINED_PRIVILEGED_FUNCTIONS                    0
@@ -138,7 +134,7 @@ function. */
 routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
 INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER
 PRIORITY THAN THIS! (higher priorities are lower numeric values. */
-#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    _PRIO_APP_HIGH
+#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    1
 
 
 /* Interrupt priorities used by the kernel port layer itself.  These are generic
@@ -147,13 +143,13 @@ to all Cortex-M ports, and do not rely on any particular library functions. */
 /* !!!! configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to zero !!!!
 See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
 #define configMAX_SYSCALL_INTERRUPT_PRIORITY            configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY
+#define configMAX_API_CALL_INTERRUPT_PRIORITY                                     configMAX_SYSCALL_INTERRUPT_PRIORITY
 
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
 standard names - or at least those used in the unmodified vector table. */
 
 #define vPortSVCHandler                                                           SVC_Handler
 #define xPortPendSVHandler                                                        PendSV_Handler
-
 
 /*-----------------------------------------------------------
  * Settings that are generated automatically
@@ -172,8 +168,6 @@ standard names - or at least those used in the unmodified vector table. */
 
 /* Code below should be only used by the compiler, and not the assembler. */
 #if !(defined(__ASSEMBLY__) || defined(__ASSEMBLER__))
-    #include "nrf.h"
-    #include "nrf_assert.h"
 
     /* This part of definitions may be problematic in assembly - it uses definitions from files that are not assembly compatible. */
     /* Cortex-M specific definitions. */

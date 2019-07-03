@@ -10,145 +10,37 @@ $(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
 
 # Source files common to all targets
 SRC_FILES += \
-  $(SDK_ROOT)/components/libraries/atomic_flags/nrf_atflags.c \
-  $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
-  $(SDK_ROOT)/components/libraries/experimental_section_vars/nrf_section_iter.c \
-  $(SDK_ROOT)/components/libraries/hardfault/hardfault_implementation.c \
-  $(SDK_ROOT)/components/libraries/pwr_mgmt/nrf_pwr_mgmt.c \
-  $(SDK_ROOT)/components/libraries/ringbuf/nrf_ringbuf.c \
-  $(SDK_ROOT)/components/libraries/strerror/nrf_strerror.c \
-  $(SDK_ROOT)/components/libraries/usbd/app_usbd.c \
-  $(SDK_ROOT)/components/libraries/usbd/app_usbd_core.c \
-  $(SDK_ROOT)/components/libraries/usbd/app_usbd_serial_num.c \
-  $(SDK_ROOT)/components/libraries/usbd/app_usbd_string_desc.c \
-  $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm/app_usbd_cdc_acm.c \
-  $(SDK_ROOT)/components/libraries/util/app_error.c \
-  $(SDK_ROOT)/components/libraries/util/app_error_weak.c \
-  $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
-  $(SDK_ROOT)/components/libraries/util/nrf_assert.c \
-  $(SDK_ROOT)/components/softdevice/common/nrf_sdh.c \
-  $(SDK_ROOT)/components/softdevice/common/nrf_sdh_soc.c \
-  $(SDK_ROOT)/external/utf_converter/utf.c \
-  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
-  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_power.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_gpiote.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_systick.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_usbd.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/prs/nrfx_prs.c \
-  $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
-  $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
-  $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
-  sys.c \
-  user.c \
-  usb_io.c \
-  $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
   $(FREERTOS_ROOT)/croutine.c \
   $(FREERTOS_ROOT)/event_groups.c \
   $(FREERTOS_ROOT)/list.c \
+  $(FREERTOS_ROOT)/portable/Common/mpu_wrappers.c \
+  $(FREERTOS_ROOT)/portable/GCC/ARM_CM4_MPU/port.c \
+  $(FREERTOS_ROOT)/portable/MemMang/heap_3.c \
   $(FREERTOS_ROOT)/queue.c \
   $(FREERTOS_ROOT)/stream_buffer.c \
   $(FREERTOS_ROOT)/tasks.c \
   $(FREERTOS_ROOT)/timers.c \
-  $(FREERTOS_ROOT)/portable/GCC/ARM_CM4_MPU/port.c \
-  $(FREERTOS_ROOT)/portable/MemMang/heap_3.c \
-  $(FREERTOS_ROOT)/portable/Common/mpu_wrappers.c \
+  $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
+  $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
+  sys.c \
+  user.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
-  $(SDK_ROOT)/components \
-  $(SDK_ROOT)/components/libraries/atomic \
-  $(SDK_ROOT)/components/libraries/atomic_fifo \
-  $(SDK_ROOT)/components/libraries/atomic_flags \
-  $(SDK_ROOT)/components/libraries/balloc \
-  $(SDK_ROOT)/components/libraries/cli \
-  $(SDK_ROOT)/components/libraries/crc16 \
-  $(SDK_ROOT)/components/libraries/crc32 \
-  $(SDK_ROOT)/components/libraries/crypto \
-  $(SDK_ROOT)/components/libraries/csense \
-  $(SDK_ROOT)/components/libraries/csense_drv \
-  $(SDK_ROOT)/components/libraries/delay \
-  $(SDK_ROOT)/components/libraries/ecc \
-  $(SDK_ROOT)/components/libraries/experimental_section_vars \
-  $(SDK_ROOT)/components/libraries/experimental_task_manager \
-  $(SDK_ROOT)/components/libraries/fds \
-  $(SDK_ROOT)/components/libraries/fstorage \
-  $(SDK_ROOT)/components/libraries/gfx \
-  $(SDK_ROOT)/components/libraries/gpiote \
-  $(SDK_ROOT)/components/libraries/hardfault \
-  $(SDK_ROOT)/components/libraries/hci \
-  $(SDK_ROOT)/components/libraries/led_softblink \
-  $(SDK_ROOT)/components/libraries/mem_manager \
-  $(SDK_ROOT)/components/libraries/memobj \
-  $(SDK_ROOT)/components/libraries/mpu \
-  $(SDK_ROOT)/components/libraries/mutex \
-  $(SDK_ROOT)/components/libraries/pwm \
-  $(SDK_ROOT)/components/libraries/pwr_mgmt \
-  $(SDK_ROOT)/components/libraries/queue \
-  $(SDK_ROOT)/components/libraries/ringbuf \
-  $(SDK_ROOT)/components/libraries/sdcard \
-  $(SDK_ROOT)/components/libraries/slip \
-  $(SDK_ROOT)/components/libraries/sortlist \
-  $(SDK_ROOT)/components/libraries/spi_mngr \
-  $(SDK_ROOT)/components/libraries/stack_guard \
-  $(SDK_ROOT)/components/libraries/strerror \
-  $(SDK_ROOT)/components/libraries/svc \
-  $(SDK_ROOT)/components/libraries/twi_mngr \
-  $(SDK_ROOT)/components/libraries/twi_sensor \
-  $(SDK_ROOT)/components/libraries/usbd \
-  $(SDK_ROOT)/components/libraries/usbd \
-  $(SDK_ROOT)/components/libraries/usbd/class/audio \
-  $(SDK_ROOT)/components/libraries/usbd/class/cdc \
-  $(SDK_ROOT)/components/libraries/usbd/class/cdc \
-  $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm \
-  $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm \
-  $(SDK_ROOT)/components/libraries/usbd/class/hid \
-  $(SDK_ROOT)/components/libraries/usbd/class/hid/generic \
-  $(SDK_ROOT)/components/libraries/usbd/class/hid/kbd \
-  $(SDK_ROOT)/components/libraries/usbd/class/hid/mouse \
-  $(SDK_ROOT)/components/libraries/usbd/class/msc \
-  $(SDK_ROOT)/components/libraries/util \
-  $(SDK_ROOT)/components/nfc/ndef/connection_handover/ac_rec \
-  $(SDK_ROOT)/components/nfc/ndef/connection_handover/common \
-  $(SDK_ROOT)/components/nfc/ndef/connection_handover/ep_oob_rec \
-  $(SDK_ROOT)/components/nfc/ndef/connection_handover/hs_rec \
-  $(SDK_ROOT)/components/nfc/ndef/connection_handover/le_oob_rec \
-  $(SDK_ROOT)/components/nfc/ndef/conn_hand_parser \
-  $(SDK_ROOT)/components/nfc/ndef/conn_hand_parser/ac_rec_parser \
-  $(SDK_ROOT)/components/nfc/ndef/conn_hand_parser/le_oob_rec_parser \
-  $(SDK_ROOT)/components/nfc/ndef/generic/message \
-  $(SDK_ROOT)/components/nfc/ndef/generic/record \
-  $(SDK_ROOT)/components/nfc/ndef/launchapp \
-  $(SDK_ROOT)/components/nfc/ndef/parser/message \
-  $(SDK_ROOT)/components/nfc/ndef/parser/record \
-  $(SDK_ROOT)/components/nfc/ndef/text \
-  $(SDK_ROOT)/components/nfc/ndef/uri \
-  $(SDK_ROOT)/components/nfc/t2t_lib \
-  $(SDK_ROOT)/components/nfc/t2t_parser \
-  $(SDK_ROOT)/components/nfc/t4t_lib \
-  $(SDK_ROOT)/components/nfc/t4t_parser/apdu \
-  $(SDK_ROOT)/components/nfc/t4t_parser/cc_file \
-  $(SDK_ROOT)/components/nfc/t4t_parser/hl_detection_procedure \
-  $(SDK_ROOT)/components/nfc/t4t_parser/tlv \
-  $(SDK_ROOT)/components/softdevice/common \
-  $(SDK_ROOT)/components/softdevice/s140/headers \
-  $(SDK_ROOT)/components/softdevice/s140/headers/nrf52 \
-  $(SDK_ROOT)/components/toolchain/cmsis/include \
-  $(SDK_ROOT)/integration/nrfx \
-  $(SDK_ROOT)/integration/nrfx/legacy \
-  $(SDK_ROOT)/modules/nrfx \
-  $(SDK_ROOT)/modules/nrfx/drivers/include \
-  $(SDK_ROOT)/modules/nrfx/hal \
-  $(SDK_ROOT)/modules/nrfx/mdk \
   . \
-  $(SDK_ROOT)/external/utf_converter/ \
-  $(SDK_ROOT)/external/fprintf/ \
-  $(SDK_ROOT)/components/libraries/atomic/ \
   $(FREERTOS_ROOT)/include/ \
   $(FREERTOS_ROOT)/portable/GCC/ARM_CM4_MPU/ \
-  $(SDK_ROOT)/components/libraries/log \
-  $(SDK_ROOT)/components/libraries/log/src \
+  $(SDK_ROOT)/components \
+  $(SDK_ROOT)/components/libraries/delay \
+  $(SDK_ROOT)/components/libraries/util \
+  $(SDK_ROOT)/components/softdevice/common/ \
+  $(SDK_ROOT)/components/softdevice/s140/headers/ \
+  $(SDK_ROOT)/components/softdevice/s140/headers/nrf52/ \
+  $(SDK_ROOT)/components/toolchain/cmsis/include \
+  $(SDK_ROOT)/integration/nrfx \
+  $(SDK_ROOT)/modules/nrfx \
+  $(SDK_ROOT)/modules/nrfx/hal \
+  $(SDK_ROOT)/modules/nrfx/mdk \
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -251,7 +143,7 @@ flash_softdevice:
 erase:
 	nrfjprog -f nrf52 --eraseall
 
-SDK_CONFIG_FILE := .sdk_config.h
+SDK_CONFIG_FILE := ./sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
 sdk_config:
 	java -jar $(CMSIS_CONFIG_TOOL) $(SDK_CONFIG_FILE)

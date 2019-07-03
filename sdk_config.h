@@ -11106,7 +11106,7 @@
 // <e> NRF_SDH_BLE_ENABLED - nrf_sdh_ble - SoftDevice BLE event handler
 //==========================================================
 #ifndef NRF_SDH_BLE_ENABLED
-#define NRF_SDH_BLE_ENABLED 1
+#define NRF_SDH_BLE_ENABLED 0
 #endif
 // <h> BLE Stack configuration - Stack configuration parameters
 
@@ -11790,7 +11790,7 @@
 // <e> NRF_SDH_SOC_ENABLED - nrf_sdh_soc - SoftDevice SoC event handler
 //==========================================================
 #ifndef NRF_SDH_SOC_ENABLED
-#define NRF_SDH_SOC_ENABLED 1
+#define NRF_SDH_SOC_ENABLED 0
 #endif
 // <h> SoC Observers - Observers and priority levels
 

@@ -5,14 +5,17 @@
 #include "task.h"
 
 #define LED_PIN (NRF_GPIO_PIN_MAP(0, 11))
-#define INTERVAL_MS (500)
+//#define INTERVAL_MS (500)
 
-void user_main(void) {
+void user_main(void * p) {
+    uint32_t interval = (uint32_t)p;
+
 	nrf_gpio_cfg_output(LED_PIN);
 	nrf_gpio_pin_clear(LED_PIN);
 
 	while (true) {
-		nrf_delay_ms(INTERVAL_MS);
+		vTaskDelay(pdMS_TO_TICKS(interval));
+		//nrf_delay_ms(50);
 		nrf_gpio_pin_toggle(LED_PIN);
 	}
 }
