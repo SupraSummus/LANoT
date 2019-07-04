@@ -24,6 +24,15 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
   sys.c \
   user.c \
+  usb_io.c \
+  $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm/app_usbd_cdc_acm.c \
+  $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
+  $(SDK_ROOT)/components/libraries/usbd/app_usbd_core.c \
+  $(SDK_ROOT)/components/libraries/usbd/app_usbd.c \
+  $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_usbd.c \
+  $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_systick.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -41,6 +50,15 @@ INC_FOLDERS += \
   $(SDK_ROOT)/modules/nrfx \
   $(SDK_ROOT)/modules/nrfx/hal \
   $(SDK_ROOT)/modules/nrfx/mdk \
+  $(SDK_ROOT)/components/libraries/usbd/ \
+  $(SDK_ROOT)/integration/nrfx/legacy/ \
+  $(SDK_ROOT)/modules/nrfx/drivers/include/ \
+  $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm/ \
+  $(SDK_ROOT)/components/libraries/usbd/class/cdc/ \
+  $(SDK_ROOT)/components/libraries/atomic/ \
+  $(SDK_ROOT)/components/libraries/log/ \
+  $(SDK_ROOT)/components/libraries/experimental_section_vars/ \
+  $(SDK_ROOT)/components/libraries/log/src/ \
 
 # Libraries common to all targets
 LIB_FILES += \

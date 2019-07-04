@@ -77,7 +77,7 @@
 // <e> NRF_BLE_CONN_PARAMS_ENABLED - ble_conn_params - Initiating and executing a connection parameters negotiation procedure
 //==========================================================
 #ifndef NRF_BLE_CONN_PARAMS_ENABLED
-#define NRF_BLE_CONN_PARAMS_ENABLED 1
+#define NRF_BLE_CONN_PARAMS_ENABLED 0
 #endif
 // <o> NRF_BLE_CONN_PARAMS_MAX_SLAVE_LATENCY_DEVIATION - The largest acceptable deviation in slave latency. 
 // <i> The largest deviation (+ or -) from the requested slave latency that will not be renegotiated.
@@ -99,13 +99,13 @@
  
 
 #ifndef NRF_BLE_GATT_ENABLED
-#define NRF_BLE_GATT_ENABLED 1
+#define NRF_BLE_GATT_ENABLED 0
 #endif
 
 // <e> NRF_BLE_QWR_ENABLED - nrf_ble_qwr - Queued writes support module (prepare/execute write)
 //==========================================================
 #ifndef NRF_BLE_QWR_ENABLED
-#define NRF_BLE_QWR_ENABLED 1
+#define NRF_BLE_QWR_ENABLED 0
 #endif
 // <o> NRF_BLE_QWR_MAX_ATTR - Maximum number of attribute handles that can be registered. This number must be adjusted according to the number of attributes for which Queued Writes will be enabled. If it is zero, the module will reject all Queued Write requests. 
 #ifndef NRF_BLE_QWR_MAX_ATTR
@@ -423,7 +423,7 @@
  
 
 #ifndef BLE_LBS_ENABLED
-#define BLE_LBS_ENABLED 1
+#define BLE_LBS_ENABLED 0
 #endif
 
 // <q> BLE_LLS_ENABLED  - ble_lls - Link Loss Service
@@ -4307,7 +4307,7 @@
 // <e> NRFX_UARTE_ENABLED - nrfx_uarte - UARTE peripheral driver
 //==========================================================
 #ifndef NRFX_UARTE_ENABLED
-#define NRFX_UARTE_ENABLED 1
+#define NRFX_UARTE_ENABLED 0
 #endif
 // <o> NRFX_UARTE0_ENABLED - Enable UARTE0 instance 
 #ifndef NRFX_UARTE0_ENABLED
@@ -4433,7 +4433,7 @@
 // <e> NRFX_UART_ENABLED - nrfx_uart - UART peripheral driver
 //==========================================================
 #ifndef NRFX_UART_ENABLED
-#define NRFX_UART_ENABLED 1
+#define NRFX_UART_ENABLED 0
 #endif
 // <o> NRFX_UART0_ENABLED - Enable UART0 instance 
 #ifndef NRFX_UART0_ENABLED
@@ -4708,7 +4708,7 @@
 // <e> NRF_CLOCK_ENABLED - nrf_drv_clock - CLOCK peripheral driver - legacy layer
 //==========================================================
 #ifndef NRF_CLOCK_ENABLED
-#define NRF_CLOCK_ENABLED 1
+#define NRF_CLOCK_ENABLED 0
 #endif
 // <o> CLOCK_CONFIG_LF_SRC  - LF Clock Source
  
@@ -4803,7 +4803,7 @@
 // <e> POWER_ENABLED - nrf_drv_power - POWER peripheral driver - legacy layer
 //==========================================================
 #ifndef POWER_ENABLED
-#define POWER_ENABLED 1
+#define POWER_ENABLED 0
 #endif
 // <o> POWER_CONFIG_IRQ_PRIORITY  - Interrupt priority
  
@@ -5785,7 +5785,7 @@
 // <e> UART_ENABLED - nrf_drv_uart - UART/UARTE peripheral driver - legacy layer
 //==========================================================
 #ifndef UART_ENABLED
-#define UART_ENABLED 1
+#define UART_ENABLED 0
 #endif
 // <o> UART_DEFAULT_CONFIG_HWFC  - Hardware Flow Control
  
@@ -7118,7 +7118,7 @@
 // <e> NRF_PWR_MGMT_ENABLED - nrf_pwr_mgmt - Power management module
 //==========================================================
 #ifndef NRF_PWR_MGMT_ENABLED
-#define NRF_PWR_MGMT_ENABLED 1
+#define NRF_PWR_MGMT_ENABLED 0
 #endif
 // <e> NRF_PWR_MGMT_CONFIG_DEBUG_PIN_ENABLED - Enables pin debug in the module.
 
@@ -7544,7 +7544,7 @@
 // <e> NRF_LOG_BACKEND_UART_ENABLED - nrf_log_backend_uart - Log UART backend
 //==========================================================
 #ifndef NRF_LOG_BACKEND_UART_ENABLED
-#define NRF_LOG_BACKEND_UART_ENABLED 1
+#define NRF_LOG_BACKEND_UART_ENABLED 0
 #endif
 // <o> NRF_LOG_BACKEND_UART_TX_PIN - UART TX pin 
 #ifndef NRF_LOG_BACKEND_UART_TX_PIN
@@ -10462,7 +10462,7 @@
  
 
 #ifndef NRF_LOG_STR_FORMATTER_TIMESTAMP_FORMAT_ENABLED
-#define NRF_LOG_STR_FORMATTER_TIMESTAMP_FORMAT_ENABLED 1
+#define NRF_LOG_STR_FORMATTER_TIMESTAMP_FORMAT_ENABLED 0
 #endif
 
 // </h> 
@@ -11622,7 +11622,7 @@
 // <e> NRF_SDH_ENABLED - nrf_sdh - SoftDevice handler
 //==========================================================
 #ifndef NRF_SDH_ENABLED
-#define NRF_SDH_ENABLED 1
+#define NRF_SDH_ENABLED 0
 #endif
 // <h> Dispatch model 
 

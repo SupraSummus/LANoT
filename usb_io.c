@@ -73,8 +73,8 @@ int _write(int file, char * buf, int nbytes) {
         return -1;
     }
 
-	while (!nrf_atomic_flag_set_fetch(&tx_done)) ;  // active waiting ;(
-	app_usbd_cdc_acm_write(&m_app_cdc_acm, buf, nbytes);
+	//while (!nrf_atomic_flag_set_fetch(&tx_done)) ;  // active waiting ;(
+	//app_usbd_cdc_acm_write(&m_app_cdc_acm, buf, nbytes);
 	return nbytes;
 }
 
