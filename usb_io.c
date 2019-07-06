@@ -8,9 +8,17 @@
 #include "app_usbd_cdc_acm.h"
 #include "nrf_drv_clock.h"
 
-#define READ_SIZE 1
+#include "FreeRTOS.h"
+#include "stream_buffer.h"
 
+#define READ_SIZE 1
 static char m_rx_buffer[READ_SIZE];
+
+
+#define TX_BUFFER_SIZE 256
+static StreamBufferHandle_t tx_buffer;
+#define TX_CHUNK_SIZE 16
+//static char tx_chunk[TX_CHUNK_SIZE];
 
 static atomic_flag tx_in_progress;
 static atomic_flag _write_critical_section_taken;
@@ -32,12 +40,14 @@ static void cdc_acm_user_ev_handler(
 			);
 
 			// allow sending
-            atomic_flag_clear(&_write_critical_section_taken);
+			atomic_flag_clear(&_write_critical_section_taken);
 
-            break;
-        }
+			break;
+		}
 
 		case APP_USBD_CDC_ACM_USER_EVT_PORT_CLOSE: {
+			// disallow sending
+			atomic_flag_test_and_set(&_write_critical_section_taken);
 			break;
 		}
 
@@ -54,12 +64,22 @@ static void cdc_acm_user_ev_handler(
         }
 
 		case APP_USBD_CDC_ACM_USER_EVT_TX_DONE: {
+			/*size_t s = xStreamBufferReceiveFromISR(
+				tx_buffer,
+				tx_chunk,
+				TX_CHUNK_SIZE,
+				NULL,
+			);
+			if (s > 0) {
+				app_usbd_cdc_acm_write(p_app_cdc_acm, tx_chunk, s);
+			}*/
 			atomic_flag_clear(&tx_in_progress);
 			break;
 		}
 
-        default:
-            break;
+		default: {
+			break;
+		}
     }
 }
 
@@ -105,7 +125,7 @@ APP_USBD_CDC_ACM_GLOBAL_DEF(
     NRF_DRV_USBD_EPIN2,  // CDC_ACM_COMM_EPIN
     NRF_DRV_USBD_EPIN1,  // CDC_ACM_DATA_EPIN
     NRF_DRV_USBD_EPOUT1,  // CDC_ACM_DATA_EPOUT
-    APP_USBD_CDC_COMM_PROTOCOL_AT_V250
+    APP_USBD_CDC_COMM_PROTOCOL_NONE
 );
 
 int _write(int file, char * buf, int nbytes) {
@@ -135,19 +155,11 @@ int _write(int file, char * buf, int nbytes) {
 }
 
 void usb_io_init(void) {
+	tx_buffer = xStreamBufferCreate(TX_BUFFER_SIZE, 1);
+
 	ret_code_t ret;
 
 	atomic_flag_test_and_set(&_write_critical_section_taken);
-
-	// enable clock needed by usbd
-	ret = nrf_drv_clock_init();
-	APP_ERROR_CHECK(ret);
-
-	nrf_drv_clock_lfclk_request(NULL);
-
-	while(!nrf_drv_clock_lfclk_is_running()) {
-		/* Just waiting */
-	}
 
 	// init usbd
 	static const app_usbd_config_t m_usbd_config = {

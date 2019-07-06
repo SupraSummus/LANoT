@@ -2,6 +2,9 @@
 #include <stdio.h>
 
 #include "nrf_sdm.h"
+#include "app_error.h"
+#include "nrf_drv_clock.h"
+#include "nrf_delay.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -30,11 +33,30 @@ TaskParameters_t user_task_parameters = {
 */
 
 int main(void) {
+	ret_code_t ret;
+
 	// disable sd
 	sd_softdevice_disable();
 
+	// set vtor
 	SCB->VTOR = 0x00026000UL;
 	__DSB();
+
+	// enable clock needed by usbd
+	ret = nrf_drv_clock_init();
+	APP_ERROR_CHECK(ret);
+	nrf_drv_clock_lfclk_request(NULL);
+	while(!nrf_drv_clock_lfclk_is_running()) {
+		/* Just waiting */
+	}
+
+	// enable usb serial communication
+	usb_io_init();
+
+	printf("hello world\n");
+	printf("__isr_vector = %p\n", (void*)__isr_vector);
+	printf("SCB = %p\n", (void*)(SCB));
+	printf("SCB->VTOR = %p\n", (void*)(SCB->VTOR));
 
 	xTaskCreate(
 		user_main, /* The function that implements the task. */
@@ -60,13 +82,6 @@ int main(void) {
 		( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
 		NULL /* Handle. */
 	);
-
-	usb_io_init();
-
-	printf("hello world\n");
-	printf("__isr_vector = %p\n", (void*)__isr_vector);
-	printf("SCB = %p\n", (void*)(SCB));
-	printf("SCB->VTOR = %p\n", (void*)(SCB->VTOR));
 
 	vTaskStartScheduler();
 

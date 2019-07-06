@@ -153,6 +153,9 @@ _build/pkg.zip: _build/nrf52840_xxaa.hex
 flash: _build/pkg.zip
 	nrfutil dfu usb-serial --package $^ --port /dev/ttyACM0
 
+comm:
+	socat /dev/ttyACM0,raw -
+
 # Flash softdevice
 flash_softdevice:
 	@echo Flashing: s140_nrf52_6.1.1_softdevice.hex
