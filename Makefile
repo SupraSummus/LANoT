@@ -20,54 +20,54 @@ SRC_FILES += \
   $(FREERTOS_ROOT)/stream_buffer.c \
   $(FREERTOS_ROOT)/tasks.c \
   $(FREERTOS_ROOT)/timers.c \
-  $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
-  $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
-  ./sys.c \
-  ./user.c \
-  ./usb_io.c \
-  $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm/app_usbd_cdc_acm.c \
   $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
-  $(SDK_ROOT)/components/libraries/usbd/app_usbd_core.c \
   $(SDK_ROOT)/components/libraries/usbd/app_usbd.c \
-  $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_usbd.c \
-  $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
-  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_systick.c \
-  $(SDK_ROOT)/components/libraries/util/app_error.c \
+  $(SDK_ROOT)/components/libraries/usbd/app_usbd_core.c \
   $(SDK_ROOT)/components/libraries/usbd/app_usbd_string_desc.c \
+  $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm/app_usbd_cdc_acm.c \
+  $(SDK_ROOT)/components/libraries/util/app_error.c \
+  $(SDK_ROOT)/components/libraries/util/app_error_weak.c \
+  $(SDK_ROOT)/components/libraries/util/app_util_platform.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
   $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_power.c \
-  $(SDK_ROOT)/components/libraries/util/app_error_weak.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_systick.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_usbd.c \
+  $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
+  $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
+  $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
+  ./sys.c \
+  ./usb_io.c \
+  ./user.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
-  ./ \
   $(FREERTOS_ROOT)/include/ \
   $(FREERTOS_ROOT)/portable/GCC/ARM_CM4_MPU/ \
   $(SDK_ROOT)/components \
+  $(SDK_ROOT)/components/libraries/atomic/ \
   $(SDK_ROOT)/components/libraries/delay \
+  $(SDK_ROOT)/components/libraries/experimental_section_vars/ \
+  $(SDK_ROOT)/components/libraries/log/ \
+  $(SDK_ROOT)/components/libraries/log/src/ \
+  $(SDK_ROOT)/components/libraries/strerror/ \
+  $(SDK_ROOT)/components/libraries/usbd/ \
+  $(SDK_ROOT)/components/libraries/usbd/class/cdc/ \
+  $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm/ \
   $(SDK_ROOT)/components/libraries/util \
   $(SDK_ROOT)/components/softdevice/common/ \
   $(SDK_ROOT)/components/softdevice/s140/headers/ \
   $(SDK_ROOT)/components/softdevice/s140/headers/nrf52/ \
   $(SDK_ROOT)/components/toolchain/cmsis/include \
+  $(SDK_ROOT)/external/utf_converter/ \
   $(SDK_ROOT)/integration/nrfx \
+  $(SDK_ROOT)/integration/nrfx/legacy/ \
   $(SDK_ROOT)/modules/nrfx \
+  $(SDK_ROOT)/modules/nrfx/drivers/include/ \
   $(SDK_ROOT)/modules/nrfx/hal \
   $(SDK_ROOT)/modules/nrfx/mdk \
-  $(SDK_ROOT)/components/libraries/usbd/ \
-  $(SDK_ROOT)/integration/nrfx/legacy/ \
-  $(SDK_ROOT)/modules/nrfx/drivers/include/ \
-  $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm/ \
-  $(SDK_ROOT)/components/libraries/usbd/class/cdc/ \
-  $(SDK_ROOT)/components/libraries/atomic/ \
-  $(SDK_ROOT)/components/libraries/log/ \
-  $(SDK_ROOT)/components/libraries/experimental_section_vars/ \
-  $(SDK_ROOT)/components/libraries/log/src/ \
-  $(SDK_ROOT)/external/utf_converter/ \
-  $(SDK_ROOT)/components/libraries/strerror/ \
+  ./ \
 
 # Libraries common to all targets
 LIB_FILES += \

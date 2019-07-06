@@ -1,4 +1,5 @@
 #include <unistd.h>
+#include <stdio.h>
 
 #include "nrf_sdm.h"
 
@@ -8,7 +9,7 @@
 
 extern void user_main(void*);
 extern void user_main_write(void*);
-extern void * __isr_vector;
+extern uint32_t __isr_vector;
 
 //unsigned long user_stack[256] __attribute__((aligned(1024))); 
 
@@ -32,6 +33,9 @@ int main(void) {
 	// disable sd
 	sd_softdevice_disable();
 
+	SCB->VTOR = 0x00026000UL;
+	__DSB();
+
 	xTaskCreate(
 		user_main, /* The function that implements the task. */
 		"user1", /* Text name for the task. */
@@ -48,17 +52,23 @@ int main(void) {
 		( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
 		NULL /* Handle. */
 	);
-	//xTaskCreate(
-	//	user_main_write, /* The function that implements the task. */
-	//	"user3", /* Text name for the task. */
-	//	256, /* Stack depth in words. */
-	//	NULL, /* Task parameters. */
-	//	( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
-	//	NULL /* Handle. */
-	//);
+	xTaskCreate(
+		user_main_write, /* The function that implements the task. */
+		"user3", /* Text name for the task. */
+		256, /* Stack depth in words. */
+		NULL, /* Task parameters. */
+		( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
+		NULL /* Handle. */
+	);
+
+	usb_io_init();
+
+	printf("hello world\n");
+	printf("__isr_vector = %p\n", (void*)__isr_vector);
+	printf("SCB = %p\n", (void*)(SCB));
+	printf("SCB->VTOR = %p\n", (void*)(SCB->VTOR));
 
 	vTaskStartScheduler();
-	usb_io_init(); // not reached but it makes linker detect missing references
 
 	/* Should not reach here as the scheduler is already started. */
 	for( ; ; ) {

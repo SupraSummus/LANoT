@@ -21,7 +21,7 @@ void user_main(void * p) {
 void user_main_write(void * p) {
 	(void)p;
 
-	for (int i = 0; i++; ) {
+	for (int i = 0; true; i++) {
 		vTaskDelay(pdMS_TO_TICKS(1000));
 		printf("write %d\n", i);
 	}
