@@ -22,9 +22,9 @@ SRC_FILES += \
   $(FREERTOS_ROOT)/timers.c \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
-  sys.c \
-  user.c \
-  usb_io.c \
+  ./sys.c \
+  ./user.c \
+  ./usb_io.c \
   $(SDK_ROOT)/components/libraries/usbd/class/cdc/acm/app_usbd_cdc_acm.c \
   $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
   $(SDK_ROOT)/components/libraries/usbd/app_usbd_core.c \
@@ -33,10 +33,17 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_usbd.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
   $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_systick.c \
+  $(SDK_ROOT)/components/libraries/util/app_error.c \
+  $(SDK_ROOT)/components/libraries/usbd/app_usbd_string_desc.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_clock.c \
+  $(SDK_ROOT)/integration/nrfx/legacy/nrf_drv_power.c \
+  $(SDK_ROOT)/components/libraries/util/app_error_weak.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_clock.c \
+  $(SDK_ROOT)/modules/nrfx/drivers/src/nrfx_power.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
-  . \
+  ./ \
   $(FREERTOS_ROOT)/include/ \
   $(FREERTOS_ROOT)/portable/GCC/ARM_CM4_MPU/ \
   $(SDK_ROOT)/components \
@@ -59,6 +66,8 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/log/ \
   $(SDK_ROOT)/components/libraries/experimental_section_vars/ \
   $(SDK_ROOT)/components/libraries/log/src/ \
+  $(SDK_ROOT)/external/utf_converter/ \
+  $(SDK_ROOT)/components/libraries/strerror/ \
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -70,13 +79,9 @@ OPT = -O3 -g3
 
 # C flags common to all targets
 CFLAGS += $(OPT)
-CFLAGS += -DBOARD_PCA10059
 CFLAGS += -DCONFIG_GPIO_AS_PINRESET
 CFLAGS += -DFLOAT_ABI_HARD
 CFLAGS += -DNRF52840_XXAA
-CFLAGS += -DNRF_SD_BLE_API_VERSION=6
-CFLAGS += -DS140
-CFLAGS += -DSOFTDEVICE_PRESENT
 CFLAGS += -DSWI_DISABLE0
 CFLAGS += -mcpu=cortex-m4
 CFLAGS += -mthumb -mabi=aapcs
@@ -94,13 +99,9 @@ ASMFLAGS += -g3
 ASMFLAGS += -mcpu=cortex-m4
 ASMFLAGS += -mthumb -mabi=aapcs
 ASMFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
-ASMFLAGS += -DBOARD_PCA10059
 ASMFLAGS += -DCONFIG_GPIO_AS_PINRESET
 ASMFLAGS += -DFLOAT_ABI_HARD
 ASMFLAGS += -DNRF52840_XXAA
-ASMFLAGS += -DNRF_SD_BLE_API_VERSION=6
-ASMFLAGS += -DS140
-ASMFLAGS += -DSOFTDEVICE_PRESENT
 ASMFLAGS += -DSWI_DISABLE0
 
 # Linker flags

@@ -40,3 +40,10 @@ Then to program attached device do
 It's expecting device's usb-uart bootloader to be listening at `/dev/ttyACM0`.
 
 Binaries are signed using Fanstel disclosed key.
+
+Research level links
+--------------------
+
+* https://github.com/libopencm3/libopencm3/
+* https://github.com/nRFMesh/nRF52_Mesh https://www.homesmartmesh.com/
+* list of rtoses https://www.osrtos.com/

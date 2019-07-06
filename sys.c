@@ -57,8 +57,8 @@ int main(void) {
 	//	NULL /* Handle. */
 	//);
 
-	//usb_io_init();
 	vTaskStartScheduler();
+	usb_io_init(); // not reached but it makes linker detect missing references
 
 	/* Should not reach here as the scheduler is already started. */
 	for( ; ; ) {
