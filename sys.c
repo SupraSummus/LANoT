@@ -62,34 +62,34 @@ int main(void) {
 
 	xTaskCreate(
 		user_main, /* The function that implements the task. */
-		"user1", /* Text name for the task. */
+		"blink1", /* Text name for the task. */
 		100, /* Stack depth in words. */
 		(void *)500, /* Task parameters. */
-		( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
+		( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
 		NULL /* Handle. */
 	);
 	xTaskCreate(
 		user_main, /* The function that implements the task. */
-		"user2", /* Text name for the task. */
+		"blink2", /* Text name for the task. */
 		100, /* Stack depth in words. */
 		(void *)444, /* Task parameters. */
-		( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
+		( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
 		NULL /* Handle. */
 	);
-	//xTaskCreate(
-	//	user_main_write, /* The function that implements the task. */
-	//	"user3", /* Text name for the task. */
-	//	256, /* Stack depth in words. */
-	//	NULL, /* Task parameters. */
-	//	( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
-	//	NULL /* Handle. */
-	//);
 	xTaskCreate(
-		user_main_echo, /* The function that implements the task. */
-		"user4", /* Text name for the task. */
+		user_main_write, /* The function that implements the task. */
+		"ping", /* Text name for the task. */
 		256, /* Stack depth in words. */
 		NULL, /* Task parameters. */
-		( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
+		( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
+		NULL /* Handle. */
+	);
+	xTaskCreate(
+		user_main_echo, /* The function that implements the task. */
+		"echo", /* Text name for the task. */
+		256, /* Stack depth in words. */
+		NULL, /* Task parameters. */
+		( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
 		NULL /* Handle. */
 	);
 

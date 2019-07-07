@@ -1,6 +1,5 @@
 #include <errno.h>
 #include <unistd.h>
-#include <stdatomic.h>
 
 #include "app_usbd_core.h"
 #include "app_usbd.h"
@@ -18,8 +17,8 @@ static EventGroupHandle_t usb_io_status;
 static SemaphoreHandle_t _read_mutex;
 static SemaphoreHandle_t rx_done;
 
-static atomic_flag tx_in_progress;
-static atomic_flag _write_critical_section_taken;
+static SemaphoreHandle_t _write_mutex;
+static SemaphoreHandle_t tx_done;
 
 static void cdc_acm_user_ev_handler(
 	app_usbd_class_inst_t const * p_inst,
@@ -29,14 +28,12 @@ static void cdc_acm_user_ev_handler(
 		case APP_USBD_CDC_ACM_USER_EVT_PORT_OPEN: {
 			// allow transfer
 			xEventGroupSetBitsFromISR(usb_io_status, USB_IO_ACTIVE, NULL);
-			atomic_flag_clear(&_write_critical_section_taken);
 			break;
 		}
 
 		case APP_USBD_CDC_ACM_USER_EVT_PORT_CLOSE: {
 			// disallow transfer
 			xEventGroupClearBitsFromISR(usb_io_status, USB_IO_ACTIVE);
-			atomic_flag_test_and_set(&_write_critical_section_taken);
 			break;
 		}
 
@@ -46,7 +43,7 @@ static void cdc_acm_user_ev_handler(
 		}
 
 		case APP_USBD_CDC_ACM_USER_EVT_TX_DONE: {
-			atomic_flag_clear(&tx_in_progress);
+			xSemaphoreGiveFromISR(tx_done, NULL);
 			break;
 		}
 
@@ -149,21 +146,24 @@ int _write(int file, char * buf, int nbytes) {
 		return -1;
 	}
 
-	// spinlocking a bit .... should use ringbuffer or something
-	while (atomic_flag_test_and_set(&_write_critical_section_taken)) ;
+	ret_code_t ret;
 
-	do {
-		atomic_flag_test_and_set(&tx_in_progress);
+	xEventGroupWaitBits(
+		usb_io_status, USB_IO_ACTIVE,
+		pdFALSE, pdFALSE,
+		portMAX_DELAY
+	);
+
+	xSemaphoreTake(_write_mutex, portMAX_DELAY);
 
 		// do tx
-		app_usbd_cdc_acm_write(&m_app_cdc_acm, buf, nbytes);
+		ret = app_usbd_cdc_acm_write(&m_app_cdc_acm, buf, nbytes);
+		APP_ERROR_CHECK(ret);
 
 		// wait for tx done
-		while (atomic_flag_test_and_set(&tx_in_progress)) ;
-		atomic_flag_clear(&tx_in_progress);
-	} while (false);
+		xSemaphoreTake(tx_done, portMAX_DELAY);
 
-	atomic_flag_clear(&_write_critical_section_taken);
+	xSemaphoreGive(_write_mutex);
 
 	return nbytes;
 }
@@ -171,12 +171,11 @@ int _write(int file, char * buf, int nbytes) {
 void usb_io_init(void) {
 	ret_code_t ret;
 
-	// transfer is initially blocked
-	atomic_flag_test_and_set(&_write_critical_section_taken);
-
 	usb_io_status = xEventGroupCreate();
 	_read_mutex = xSemaphoreCreateMutex();
 	rx_done = xSemaphoreCreateBinary();
+	_write_mutex = xSemaphoreCreateMutex();
+	tx_done = xSemaphoreCreateBinary();
 
 	// init usbd
 	static const app_usbd_config_t m_usbd_config = {
