@@ -10,8 +10,12 @@
 #include "FreeRTOS.h"
 #include "stream_buffer.h"
 #include "semphr.h"
+#include "event_groups.h"
 
-static atomic_flag _read_critical_section_taken;
+#define USB_IO_ACTIVE (0x01)
+static EventGroupHandle_t usb_io_status;
+
+static SemaphoreHandle_t _read_mutex;
 static SemaphoreHandle_t rx_done;
 
 static atomic_flag tx_in_progress;
@@ -24,14 +28,14 @@ static void cdc_acm_user_ev_handler(
 	switch (event) {
 		case APP_USBD_CDC_ACM_USER_EVT_PORT_OPEN: {
 			// allow transfer
-			atomic_flag_clear(&_read_critical_section_taken);
+			xEventGroupSetBitsFromISR(usb_io_status, USB_IO_ACTIVE, NULL);
 			atomic_flag_clear(&_write_critical_section_taken);
 			break;
 		}
 
 		case APP_USBD_CDC_ACM_USER_EVT_PORT_CLOSE: {
 			// disallow transfer
-			atomic_flag_test_and_set(&_read_critical_section_taken);
+			xEventGroupClearBitsFromISR(usb_io_status, USB_IO_ACTIVE);
 			atomic_flag_test_and_set(&_write_critical_section_taken);
 			break;
 		}
@@ -106,9 +110,14 @@ int _read (int file, char *ptr, int len) {
 	size_t local_rx_size = 0;
 	ret_code_t ret;
 
-	while (atomic_flag_test_and_set(&_read_critical_section_taken)) ;
+	xEventGroupWaitBits(
+		usb_io_status, USB_IO_ACTIVE,
+		pdFALSE, pdFALSE,
+		portMAX_DELAY
+	);
 
-	do {
+	xSemaphoreTake(_read_mutex, portMAX_DELAY);
+
 		ret = app_usbd_cdc_acm_read_any(
 			&m_app_cdc_acm,
 			ptr,
@@ -128,9 +137,7 @@ int _read (int file, char *ptr, int len) {
 
 		local_rx_size = app_usbd_cdc_acm_rx_size(&m_app_cdc_acm);
 
-	} while (false);
-
-	atomic_flag_clear(&_read_critical_section_taken);
+	xSemaphoreGive(_read_mutex);
 
 	return local_rx_size;
 }
@@ -165,9 +172,10 @@ void usb_io_init(void) {
 	ret_code_t ret;
 
 	// transfer is initially blocked
-	atomic_flag_test_and_set(&_read_critical_section_taken);
 	atomic_flag_test_and_set(&_write_critical_section_taken);
 
+	usb_io_status = xEventGroupCreate();
+	_read_mutex = xSemaphoreCreateMutex();
 	rx_done = xSemaphoreCreateBinary();
 
 	// init usbd

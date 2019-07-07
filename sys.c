@@ -76,14 +76,14 @@ int main(void) {
 		( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
 		NULL /* Handle. */
 	);
-	xTaskCreate(
-		user_main_write, /* The function that implements the task. */
-		"user3", /* Text name for the task. */
-		256, /* Stack depth in words. */
-		NULL, /* Task parameters. */
-		( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
-		NULL /* Handle. */
-	);
+	//xTaskCreate(
+	//	user_main_write, /* The function that implements the task. */
+	//	"user3", /* Text name for the task. */
+	//	256, /* Stack depth in words. */
+	//	NULL, /* Task parameters. */
+	//	( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
+	//	NULL /* Handle. */
+	//);
 	xTaskCreate(
 		user_main_echo, /* The function that implements the task. */
 		"user4", /* Text name for the task. */

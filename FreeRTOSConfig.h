@@ -90,7 +90,7 @@
 #define configMAX_CO_ROUTINE_PRIORITIES                                           ( 2 )
 
 /* Software timer definitions. */
-#define configUSE_TIMERS                                                          0
+#define configUSE_TIMERS                                                          1
 #define configTIMER_TASK_PRIORITY                                                 ( 2 )
 #define configTIMER_QUEUE_LENGTH                                                  32
 #define configTIMER_TASK_STACK_DEPTH                                              ( 80 )
@@ -124,7 +124,7 @@
 #define INCLUDE_pcTaskGetTaskName                                                 1
 #define INCLUDE_eTaskGetState                                                     1
 #define INCLUDE_xEventGroupSetBitFromISR                                          1
-#define INCLUDE_xTimerPendFunctionCall                                            0
+#define INCLUDE_xTimerPendFunctionCall                                            1
 
 /* The lowest interrupt priority that can be used in a call to a "set priority"
 function. */
