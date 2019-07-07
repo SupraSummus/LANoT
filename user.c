@@ -1,3 +1,5 @@
+#include <unistd.h>
+
 #include "nrf_gpio.h"
 
 #include "FreeRTOS.h"
@@ -24,5 +26,20 @@ void user_main_write(void * p) {
 	for (int i = 0; true; i++) {
 		vTaskDelay(pdMS_TO_TICKS(1000));
 		printf("write %d\n", i);
+	}
+}
+
+void user_main_echo(void * p) {
+	(void)p;
+	char buf[16];
+
+	while (true) {
+		ssize_t s = read(STDIN_FILENO, buf, 15);
+		if (s > 0) {
+			buf[s] = '\0';
+			printf("got >>>%s<<<\n", buf);
+		} else {
+			printf("read returned %d\n", s);
+		}
 	}
 }

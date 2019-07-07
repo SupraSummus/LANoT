@@ -12,6 +12,8 @@
 
 extern void user_main(void*);
 extern void user_main_write(void*);
+extern void user_main_echo(void*);
+
 extern uint32_t __isr_vector;
 
 //unsigned long user_stack[256] __attribute__((aligned(1024))); 
@@ -53,10 +55,10 @@ int main(void) {
 	// enable usb serial communication
 	usb_io_init();
 
-	printf("hello world\n");
-	printf("__isr_vector = %p\n", (void*)__isr_vector);
-	printf("SCB = %p\n", (void*)(SCB));
-	printf("SCB->VTOR = %p\n", (void*)(SCB->VTOR));
+	//printf("hello world\n");
+	//printf("__isr_vector = %p\n", (void*)__isr_vector);
+	//printf("SCB = %p\n", (void*)(SCB));
+	//printf("SCB->VTOR = %p\n", (void*)(SCB->VTOR));
 
 	xTaskCreate(
 		user_main, /* The function that implements the task. */
@@ -77,6 +79,14 @@ int main(void) {
 	xTaskCreate(
 		user_main_write, /* The function that implements the task. */
 		"user3", /* Text name for the task. */
+		256, /* Stack depth in words. */
+		NULL, /* Task parameters. */
+		( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
+		NULL /* Handle. */
+	);
+	xTaskCreate(
+		user_main_echo, /* The function that implements the task. */
+		"user4", /* Text name for the task. */
 		256, /* Stack depth in words. */
 		NULL, /* Task parameters. */
 		( 3 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */

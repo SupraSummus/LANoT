@@ -1,7 +1,6 @@
 #include <errno.h>
 #include <unistd.h>
 #include <stdatomic.h>
-#include <stdio.h>
 
 #include "app_usbd_core.h"
 #include "app_usbd.h"
@@ -10,15 +9,10 @@
 
 #include "FreeRTOS.h"
 #include "stream_buffer.h"
+#include "semphr.h"
 
-#define READ_SIZE 1
-static char m_rx_buffer[READ_SIZE];
-
-
-#define TX_BUFFER_SIZE 256
-static StreamBufferHandle_t tx_buffer;
-#define TX_CHUNK_SIZE 16
-//static char tx_chunk[TX_CHUNK_SIZE];
+static atomic_flag _read_critical_section_taken;
+static SemaphoreHandle_t rx_done;
 
 static atomic_flag tx_in_progress;
 static atomic_flag _write_critical_section_taken;
@@ -27,52 +21,27 @@ static void cdc_acm_user_ev_handler(
 	app_usbd_class_inst_t const * p_inst,
 	app_usbd_cdc_acm_user_event_t event
 ) {
-    app_usbd_cdc_acm_t const * p_app_cdc_acm = app_usbd_cdc_acm_class_get(p_inst);
-
-    switch (event) {
-        case APP_USBD_CDC_ACM_USER_EVT_PORT_OPEN:
-        {
-            /*Setup first transfer*/
-            app_usbd_cdc_acm_read(
-				p_app_cdc_acm,
-				m_rx_buffer,
-				READ_SIZE
-			);
-
-			// allow sending
+	switch (event) {
+		case APP_USBD_CDC_ACM_USER_EVT_PORT_OPEN: {
+			// allow transfer
+			atomic_flag_clear(&_read_critical_section_taken);
 			atomic_flag_clear(&_write_critical_section_taken);
-
 			break;
 		}
 
 		case APP_USBD_CDC_ACM_USER_EVT_PORT_CLOSE: {
-			// disallow sending
+			// disallow transfer
+			atomic_flag_test_and_set(&_read_critical_section_taken);
 			atomic_flag_test_and_set(&_write_critical_section_taken);
 			break;
 		}
 
 		case APP_USBD_CDC_ACM_USER_EVT_RX_DONE: {
-            ret_code_t ret;
-            do
-            {
-                /* Fetch data until internal buffer is empty */
-                ret = app_usbd_cdc_acm_read(p_app_cdc_acm,
-                                            m_rx_buffer,
-                                            READ_SIZE);
-            } while (ret == NRF_SUCCESS);
-            break;
-        }
+			xSemaphoreGiveFromISR(rx_done, NULL);
+			break;
+		}
 
 		case APP_USBD_CDC_ACM_USER_EVT_TX_DONE: {
-			/*size_t s = xStreamBufferReceiveFromISR(
-				tx_buffer,
-				tx_chunk,
-				TX_CHUNK_SIZE,
-				NULL,
-			);
-			if (s > 0) {
-				app_usbd_cdc_acm_write(p_app_cdc_acm, tx_chunk, s);
-			}*/
 			atomic_flag_clear(&tx_in_progress);
 			break;
 		}
@@ -80,53 +49,91 @@ static void cdc_acm_user_ev_handler(
 		default: {
 			break;
 		}
-    }
+	}
 }
 
 static void usbd_user_ev_handler(app_usbd_event_type_t event) {
-    switch (event) {
-        case APP_USBD_EVT_DRV_SUSPEND:
-            break;
+	switch (event) {
+		case APP_USBD_EVT_DRV_SUSPEND:
+			break;
 
-        case APP_USBD_EVT_DRV_RESUME:
-            break;
+		case APP_USBD_EVT_DRV_RESUME:
+			break;
 
-        case APP_USBD_EVT_STARTED:
-            break;
+		case APP_USBD_EVT_STARTED:
+			break;
 
-        case APP_USBD_EVT_STOPPED:
-            app_usbd_disable();
-            break;
+		case APP_USBD_EVT_STOPPED:
+			app_usbd_disable();
+			break;
 
-        case APP_USBD_EVT_POWER_DETECTED:
-            if (!nrf_drv_usbd_is_enabled()) {
-                app_usbd_enable();
-            }
-            break;
+		case APP_USBD_EVT_POWER_DETECTED:
+			if (!nrf_drv_usbd_is_enabled()) {
+				app_usbd_enable();
+			}
+			break;
 
-        case APP_USBD_EVT_POWER_REMOVED:
-            app_usbd_stop();
-            break;
+		case APP_USBD_EVT_POWER_REMOVED:
+			app_usbd_stop();
+			break;
 
-        case APP_USBD_EVT_POWER_READY:
-            app_usbd_start();
-            break;
+		case APP_USBD_EVT_POWER_READY:
+			app_usbd_start();
+			break;
 
-        default:
-            break;
-    }
+		default:
+			break;
+	}
 }
 
 APP_USBD_CDC_ACM_GLOBAL_DEF(
-    m_app_cdc_acm,
-    cdc_acm_user_ev_handler,
-    0,  // CDC_ACM_COMM_INTERFACE
-    1,  // CDC_ACM_DATA_INTERFACE
-    NRF_DRV_USBD_EPIN2,  // CDC_ACM_COMM_EPIN
-    NRF_DRV_USBD_EPIN1,  // CDC_ACM_DATA_EPIN
-    NRF_DRV_USBD_EPOUT1,  // CDC_ACM_DATA_EPOUT
-    APP_USBD_CDC_COMM_PROTOCOL_NONE
+	m_app_cdc_acm,
+	cdc_acm_user_ev_handler,
+	0,  // CDC_ACM_COMM_INTERFACE
+	1,  // CDC_ACM_DATA_INTERFACE
+	NRF_DRV_USBD_EPIN2,  // CDC_ACM_COMM_EPIN
+	NRF_DRV_USBD_EPIN1,  // CDC_ACM_DATA_EPIN
+	NRF_DRV_USBD_EPOUT1,  // CDC_ACM_DATA_EPOUT
+	APP_USBD_CDC_COMM_PROTOCOL_NONE
 );
+
+int _read (int file, char *ptr, int len) {
+	if (file != STDIN_FILENO) {
+		errno = EBADF;
+		return  -1;
+	}
+
+	size_t local_rx_size = 0;
+	ret_code_t ret;
+
+	while (atomic_flag_test_and_set(&_read_critical_section_taken)) ;
+
+	do {
+		ret = app_usbd_cdc_acm_read_any(
+			&m_app_cdc_acm,
+			ptr,
+			len
+		);
+
+		if (ret == NRF_SUCCESS) {
+			// pass - data was already available
+
+		} else if (ret == NRF_ERROR_IO_PENDING) {
+			// wait for rx done
+			xSemaphoreTake(rx_done, portMAX_DELAY);
+
+		} else {
+			APP_ERROR_CHECK(ret);
+		}
+
+		local_rx_size = app_usbd_cdc_acm_rx_size(&m_app_cdc_acm);
+
+	} while (false);
+
+	atomic_flag_clear(&_read_critical_section_taken);
+
+	return local_rx_size;
+}
 
 int _write(int file, char * buf, int nbytes) {
 	/* We only handle stdout */
@@ -155,11 +162,13 @@ int _write(int file, char * buf, int nbytes) {
 }
 
 void usb_io_init(void) {
-	tx_buffer = xStreamBufferCreate(TX_BUFFER_SIZE, 1);
-
 	ret_code_t ret;
 
+	// transfer is initially blocked
+	atomic_flag_test_and_set(&_read_critical_section_taken);
 	atomic_flag_test_and_set(&_write_critical_section_taken);
+
+	rx_done = xSemaphoreCreateBinary();
 
 	// init usbd
 	static const app_usbd_config_t m_usbd_config = {

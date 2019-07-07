@@ -154,7 +154,7 @@ flash: _build/pkg.zip
 	nrfutil dfu usb-serial --package $^ --port /dev/ttyACM0
 
 comm:
-	socat /dev/ttyACM0,raw -
+	socat /dev/ttyACM0,raw,echo=0 -
 
 # Flash softdevice
 flash_softdevice:
