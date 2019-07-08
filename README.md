@@ -39,6 +39,8 @@ Then to program attached device do
 
 It's expecting device's usb-uart bootloader to be listening at `/dev/ttyACM0`.
 
+To enter bootlader mode on USB840x keep button pressed while powering the device up.
+
 Binaries are signed using Fanstel disclosed key.
 
 Research level links
