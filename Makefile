@@ -38,6 +38,7 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
   ./sys.c \
+  ./syscall.S \
   ./usb_io.c \
   ./user.c \
 
@@ -90,6 +91,7 @@ CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin -fshort-enums
+CFLAGS += -D_RETARGETABLE_LOCKING
 
 # C++ flags common to all targets
 CXXFLAGS += $(OPT)

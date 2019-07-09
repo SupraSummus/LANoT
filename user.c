@@ -5,6 +5,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "syscall.h"
+
 #define LED_PIN (NRF_GPIO_PIN_MAP(0, 11))
 
 void user_main(void * p) {
@@ -15,6 +17,8 @@ void user_main(void * p) {
 
 	while (true) {
 		vTaskDelay(pdMS_TO_TICKS(interval));
+		int ret = syscall(43 /* delay ms */, interval, 0, 0);
+		printf("ret %d\n", ret);
 		nrf_gpio_pin_toggle(LED_PIN);
 	}
 }

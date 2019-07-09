@@ -289,6 +289,11 @@ uint8_t ucSVCNumber;
 											);
 											break;
 
+		case 42: {
+			pulParam[0] = pulParam[0] + pulParam[1];
+			break;
+		}
+
 		default							:	/* Unknown SVC call. */
 											break;
 	}
