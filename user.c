@@ -18,7 +18,7 @@ void user_main(void * p) {
 	while (true) {
 		vTaskDelay(pdMS_TO_TICKS(interval));
 		int ret = syscall(43 /* delay ms */, interval, 0, 0);
-		printf("ret %d\n", ret);
+		printf("syscall ret %d\n", ret);
 		nrf_gpio_pin_toggle(LED_PIN);
 	}
 }

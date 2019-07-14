@@ -16,24 +16,6 @@ extern void user_main_echo(void*);
 
 extern uint32_t __isr_vector;
 
-//unsigned long user_stack[256] __attribute__((aligned(1024))); 
-
-/*
-TaskParameters_t user_task_parameters = {
-	user_main, // pvTaskCode
-	"user", // pcName;
-	256, // usStackDepth;
-	NULL, // pvParameters
-	1 | portPRIVILEGE_BIT, // priority
-	user_stack, // puxStackBuffer;
-	{
-		{0, 0xffffffff, portMPU_REGION_READ_WRITE},
-		{0, 0, 0},
-		{0, 0, 0},
-	}, // xRegions;
-};
-*/
-
 int main(void) {
 	ret_code_t ret;
 
@@ -55,35 +37,14 @@ int main(void) {
 	// enable usb serial communication
 	usb_io_init();
 
-	//printf("hello world\n");
-	//printf("__isr_vector = %p\n", (void*)__isr_vector);
-	//printf("SCB = %p\n", (void*)(SCB));
-	//printf("SCB->VTOR = %p\n", (void*)(SCB->VTOR));
-
 	xTaskCreate(
 		user_main, /* The function that implements the task. */
 		"blink1", /* Text name for the task. */
-		256, /* Stack depth in words. */
-		(void *)500, /* Task parameters. */
+		512, /* Stack depth in words. */
+		(void *)1000, /* Task parameters. */
 		( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
 		NULL /* Handle. */
 	);
-	//xTaskCreate(
-	//	user_main, /* The function that implements the task. */
-	//	"blink2", /* Text name for the task. */
-	//	256, /* Stack depth in words. */
-	//	(void *)444, /* Task parameters. */
-	//	( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
-	//	NULL /* Handle. */
-	//);
-	//xTaskCreate(
-	//	user_main_write, /* The function that implements the task. */
-	//	"ping", /* Text name for the task. */
-	//	256, /* Stack depth in words. */
-	//	NULL, /* Task parameters. */
-	//	( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
-	//	NULL /* Handle. */
-	//);
 	xTaskCreate(
 		user_main_echo, /* The function that implements the task. */
 		"echo", /* Text name for the task. */
@@ -98,4 +59,57 @@ int main(void) {
 	/* Should not reach here as the scheduler is already started. */
 	for( ; ; ) {
 	}
+}
+
+/* configSUPPORT_STATIC_ALLOCATION is set to 1, so the application must provide an
+implementation of vApplicationGetIdleTaskMemory() to provide the memory that is
+used by the Idle task. */
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer,
+                                    StackType_t **ppxIdleTaskStackBuffer,
+                                    uint32_t *pulIdleTaskStackSize )
+{
+/* If the buffers to be provided to the Idle task are declared inside this
+function then they must be declared static - otherwise they will be allocated on
+the stack and so not exists after this function exits. */
+static StaticTask_t xIdleTaskTCB;
+static StackType_t uxIdleTaskStack[ configMINIMAL_STACK_SIZE ];
+
+    /* Pass out a pointer to the StaticTask_t structure in which the Idle task's
+    state will be stored. */
+    *ppxIdleTaskTCBBuffer = &xIdleTaskTCB;
+
+    /* Pass out the array that will be used as the Idle task's stack. */
+    *ppxIdleTaskStackBuffer = uxIdleTaskStack;
+
+    /* Pass out the size of the array pointed to by *ppxIdleTaskStackBuffer.
+    Note that, as the array is necessarily of type StackType_t,
+    configMINIMAL_STACK_SIZE is specified in words, not bytes. */
+    *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+}
+/*-----------------------------------------------------------*/
+
+/* configSUPPORT_STATIC_ALLOCATION and configUSE_TIMERS are both set to 1, so the
+application must provide an implementation of vApplicationGetTimerTaskMemory()
+to provide the memory that is used by the Timer service task. */
+void vApplicationGetTimerTaskMemory( StaticTask_t **ppxTimerTaskTCBBuffer,
+                                     StackType_t **ppxTimerTaskStackBuffer,
+                                     uint32_t *pulTimerTaskStackSize )
+{
+/* If the buffers to be provided to the Timer task are declared inside this
+function then they must be declared static - otherwise they will be allocated on
+the stack and so not exists after this function exits. */
+static StaticTask_t xTimerTaskTCB;
+static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
+
+    /* Pass out a pointer to the StaticTask_t structure in which the Timer
+    task's state will be stored. */
+    *ppxTimerTaskTCBBuffer = &xTimerTaskTCB;
+
+    /* Pass out the array that will be used as the Timer task's stack. */
+    *ppxTimerTaskStackBuffer = uxTimerTaskStack;
+
+    /* Pass out the size of the array pointed to by *ppxTimerTaskStackBuffer.
+    Note that, as the array is necessarily of type StackType_t,
+    configTIMER_TASK_STACK_DEPTH is specified in words, not bytes. */
+    *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
 }

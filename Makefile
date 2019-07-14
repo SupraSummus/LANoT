@@ -15,7 +15,6 @@ SRC_FILES += \
   $(FREERTOS_ROOT)/list.c \
   $(FREERTOS_ROOT)/portable/Common/mpu_wrappers.c \
   $(FREERTOS_ROOT)/portable/GCC/ARM_CM4_MPU/port.c \
-  $(FREERTOS_ROOT)/portable/MemMang/heap_3.c \
   $(FREERTOS_ROOT)/queue.c \
   $(FREERTOS_ROOT)/stream_buffer.c \
   $(FREERTOS_ROOT)/tasks.c \
@@ -37,6 +36,8 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
+  ./heap.c \
+  ./retarget_locks_static.c \
   ./sys.c \
   ./syscall.S \
   ./usb_io.c \

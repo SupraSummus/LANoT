@@ -49,9 +49,12 @@ static void init_retarget_locks(void)
 // Special case for malloc/free. Without this, the full
 // malloc_recursive_mutex would be used, which is much slower.
 //
-/*void __malloc_lock(struct _reent *r)
+struct _reent;
+
+void __malloc_lock(struct _reent *r)
 {
     (void)r;
+    // TODO: suspend scheduler would be sufficient propably
     taskENTER_CRITICAL();
 }
 
@@ -60,8 +63,10 @@ void __malloc_unlock(struct _reent *r)
 {
     (void)r;
     taskEXIT_CRITICAL();
-}*/
+}
 
+
+/* standard semaphore locking */
 
 void __retarget_lock_init(_LOCK_T *lock_ptr)
 {
