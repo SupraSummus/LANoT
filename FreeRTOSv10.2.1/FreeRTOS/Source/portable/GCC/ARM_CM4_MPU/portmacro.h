@@ -114,6 +114,7 @@ typedef struct MPU_SETTINGS
 #define portSVC_START_SCHEDULER				0
 #define portSVC_YIELD						1
 #define portSVC_RAISE_PRIVILEGE				2
+#define portSVC_SYSCALL                    42
 
 /* Scheduler utilities. */
 

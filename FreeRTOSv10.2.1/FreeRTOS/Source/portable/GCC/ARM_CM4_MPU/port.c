@@ -29,6 +29,8 @@
  * Implementation of functions defined in portable.h for the ARM CM3 port.
  *----------------------------------------------------------*/
 
+#include <errno.h>
+
 /* Defining MPU_WRAPPERS_INCLUDED_FROM_API_FILE prevents task.h from redefining
 all the API functions to use the MPU wrappers.  That should only be done when
 task.h is included from an application file. */
@@ -289,8 +291,25 @@ uint8_t ucSVCNumber;
 											);
 											break;
 
-		case 42: {
-			pulParam[0] = pulParam[0] + pulParam[1];
+		case portSVC_SYSCALL: {
+			uint32_t syscall = pulParam[0];
+			uint32_t ret = 0;
+			switch (syscall) {
+				case 0: { // no-op
+					break;
+				}
+				#if ( INCLUDE_vTaskDelay == 1 )
+					case 1: { // delay ms
+						vTaskDelay(pdMS_TO_TICKS(pulParam[1]));
+						break;
+					}
+				#endif
+				default: {
+					ret = -ENOSYS;
+					break;
+				}
+			}
+			pulParam[0] = ret;
 			break;
 		}
 
