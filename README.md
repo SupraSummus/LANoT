@@ -17,6 +17,8 @@ You need to configure toolchain path for SDK. Edit `nRF5_SDK_15.3.0_59ac345/comp
     GNU_VERSION ?= 9.1.0
     GNU_PREFIX ?= arm-none-eabi
 
+Download and unpack [freeRTOS](https://www.freertos.org/) source to `./FreeRTOSv10.2.1` dir.
+
 You can check downloaded zip(s) against `sha256sums` file.
 
 Then you should be able to succesffuly run `make`.

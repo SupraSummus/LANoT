@@ -14,7 +14,6 @@ SRC_FILES += \
   $(FREERTOS_ROOT)/event_groups.c \
   $(FREERTOS_ROOT)/list.c \
   $(FREERTOS_ROOT)/portable/Common/mpu_wrappers.c \
-  $(FREERTOS_ROOT)/portable/GCC/ARM_CM4_MPU/port.c \
   $(FREERTOS_ROOT)/queue.c \
   $(FREERTOS_ROOT)/stream_buffer.c \
   $(FREERTOS_ROOT)/tasks.c \
@@ -36,8 +35,9 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
-  ./heap.c \
-  ./retarget_locks_static.c \
+  ./safer_rtos/port.c \
+  ./freertos_and_newlib/heap.c \
+  ./freertos_and_newlib/retarget_locks_static.c \
   ./sys.c \
   ./syscall.S \
   ./usb_io.c \
@@ -46,7 +46,6 @@ SRC_FILES += \
 # Include folders common to all targets
 INC_FOLDERS += \
   $(FREERTOS_ROOT)/include/ \
-  $(FREERTOS_ROOT)/portable/GCC/ARM_CM4_MPU/ \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/libraries/atomic/ \
   $(SDK_ROOT)/components/libraries/delay \
@@ -70,6 +69,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/modules/nrfx/hal \
   $(SDK_ROOT)/modules/nrfx/mdk \
   ./ \
+  ./safer_rtos/ \
 
 # Libraries common to all targets
 LIB_FILES += \
