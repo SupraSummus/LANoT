@@ -16,6 +16,22 @@ extern void user_main_echo(void*);
 
 extern uint32_t __isr_vector;
 
+
+TaskParameters_t user_task_parameters = {
+	user_main, // pvTaskCode
+	"blink1", // pcName;
+	256, // usStackDepth;
+	(void*)1000, // pvParameters
+	1 | portPRIVILEGE_BIT, // priority
+	NULL, // puxStackBuffer;
+	{
+		//{(void*)0x50000000, 0x00000800 , portMPU_REGION_READ_WRITE},  // gpio regs
+		{0, 0, 0},
+		{0, 0, 0},
+		{0, 0, 0},
+	}, // xRegions;
+};
+
 int main(void) {
 	ret_code_t ret;
 
@@ -35,24 +51,30 @@ int main(void) {
 	}
 
 	// enable usb serial communication
-	usb_io_init();
+	//usb_io_init();
 
+	//xTaskCreateRestricted(&user_task_parameters, NULL);
+	//TaskHandle_t blink1_handle;
 	xTaskCreate(
 		user_main, /* The function that implements the task. */
 		"blink1", /* Text name for the task. */
 		512, /* Stack depth in words. */
 		(void *)1000, /* Task parameters. */
-		( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
+		1 | portPRIVILEGE_BIT, /* Priority and mode */
 		NULL /* Handle. */
 	);
-	xTaskCreate(
-		user_main_echo, /* The function that implements the task. */
-		"echo", /* Text name for the task. */
-		256, /* Stack depth in words. */
-		NULL, /* Task parameters. */
-		( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
-		NULL /* Handle. */
-	);
+	//vTaskAllocateMPURegions(
+	//	blink1_handle,
+	//	xRegions
+	//);
+	//xTaskCreate(
+	//	user_main_echo, /* The function that implements the task. */
+	//	"echo", /* Text name for the task. */
+	//	256, /* Stack depth in words. */
+	//	NULL, /* Task parameters. */
+	//	( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
+	//	NULL /* Handle. */
+	//);
 
 	vTaskStartScheduler();
 

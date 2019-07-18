@@ -17,7 +17,8 @@ void user_main(void * p) {
 
 	while (true) {
 		int ret = syscall(1 /* delay ms */, interval, 0, 0);
-		printf("syscall ret %d\n", ret);
+		(void)ret;
+		//printf("syscall ret %d\n", ret);
 		nrf_gpio_pin_toggle(LED_PIN);
 	}
 }

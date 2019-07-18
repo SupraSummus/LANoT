@@ -70,7 +70,8 @@ typedef unsigned long UBaseType_t;
 /*-----------------------------------------------------------*/
 
 /* MPU specific constants. */
-#define portUSING_MPU_WRAPPERS		1
+#undef  portUSING_MPU_WRAPPERS
+#define portUSING_MPU               (1)
 #define portPRIVILEGE_BIT			( 0x80000000UL )
 
 #define portMPU_REGION_READ_WRITE				( 0x03UL << 24UL )

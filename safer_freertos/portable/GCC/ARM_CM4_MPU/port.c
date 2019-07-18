@@ -300,6 +300,8 @@ uint8_t ucSVCNumber;
 				}
 				#if ( INCLUDE_vTaskDelay == 1 )
 					case 1: { // delay ms
+						// TODO idealy this should be implemented using [...]FromISR functions, but standard version seems to work just fine.
+						// Despite its name vTaskDelay won't call any ISR-unsafe functions (afaik).
 						vTaskDelay(pdMS_TO_TICKS(pulParam[1]));
 						break;
 					}
@@ -474,26 +476,19 @@ void vPortEndScheduler( void )
 
 void vPortEnterCritical( void )
 {
-BaseType_t xRunningPrivileged = xPortRaisePrivilege();
-
 	portDISABLE_INTERRUPTS();
 	uxCriticalNesting++;
-
-	vPortResetPrivilege( xRunningPrivileged );
 }
 /*-----------------------------------------------------------*/
 
 void vPortExitCritical( void )
 {
-BaseType_t xRunningPrivileged = xPortRaisePrivilege();
-
 	configASSERT( uxCriticalNesting );
 	uxCriticalNesting--;
 	if( uxCriticalNesting == 0 )
 	{
 		portENABLE_INTERRUPTS();
 	}
-	vPortResetPrivilege( xRunningPrivileged );
 }
 /*-----------------------------------------------------------*/
 
@@ -626,6 +621,7 @@ extern uint32_t __privileged_data_end__[];
 											( portMPU_REGION_VALID ) |
 											( portPRIVILEGED_FLASH_REGION );
 
+		//(void)__privileged_functions_end__; // silence paranoid compiler
 		portMPU_REGION_ATTRIBUTE_REG =	( portMPU_REGION_PRIVILEGED_READ_ONLY ) |
 										( portMPU_REGION_CACHEABLE_BUFFERABLE ) |
 										( prvGetMPURegionSizeSetting( ( uint32_t ) __privileged_functions_end__ - ( uint32_t ) __FLASH_segment_start__ ) ) |

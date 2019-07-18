@@ -10,14 +10,9 @@ $(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
 
 # Source files common to all targets
 SRC_FILES += \
-  $(FREERTOS_ROOT)/croutine.c \
-  $(FREERTOS_ROOT)/event_groups.c \
   $(FREERTOS_ROOT)/list.c \
-  $(FREERTOS_ROOT)/portable/Common/mpu_wrappers.c \
   $(FREERTOS_ROOT)/queue.c \
-  $(FREERTOS_ROOT)/stream_buffer.c \
-  $(FREERTOS_ROOT)/tasks.c \
-  $(FREERTOS_ROOT)/timers.c \
+  $(FREERTOS_ROOT)/portable/MemMang/heap_3.c \
   $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
   $(SDK_ROOT)/components/libraries/usbd/app_usbd.c \
   $(SDK_ROOT)/components/libraries/usbd/app_usbd_core.c \
@@ -35,17 +30,14 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
-  ./safer_rtos/port.c \
-  ./freertos_and_newlib/heap.c \
-  ./freertos_and_newlib/retarget_locks_static.c \
+  ./safer_freertos/tasks.c \
+  ./safer_freertos/portable/GCC/ARM_CM4_MPU/port.c \
   ./sys.c \
   ./syscall.S \
-  ./usb_io.c \
   ./user.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
-  $(FREERTOS_ROOT)/include/ \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/libraries/atomic/ \
   $(SDK_ROOT)/components/libraries/delay \
@@ -69,7 +61,8 @@ INC_FOLDERS += \
   $(SDK_ROOT)/modules/nrfx/hal \
   $(SDK_ROOT)/modules/nrfx/mdk \
   ./ \
-  ./safer_rtos/ \
+  ./safer_freertos/include/ \
+  ./safer_freertos/portable/GCC/ARM_CM4_MPU/ \
 
 # Libraries common to all targets
 LIB_FILES += \
