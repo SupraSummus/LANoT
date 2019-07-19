@@ -4,7 +4,6 @@
 #include "nrf_sdm.h"
 #include "app_error.h"
 #include "nrf_drv_clock.h"
-#include "nrf_delay.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -14,22 +13,41 @@ extern void user_main(void*);
 extern void user_main_write(void*);
 extern void user_main_echo(void*);
 
-extern uint32_t __isr_vector;
+void * align_for_mpu(void * p, size_t size) {
+    if (size == 0) return p;
+    uint32_t remainder = (uint32_t)p % size;
+    if (remainder == 0) return p;
+    return (void *)((uint32_t)p + size - remainder);
+}
 
-
-TaskParameters_t user_task_parameters = {
-	user_main, // pvTaskCode
-	"blink1", // pcName;
-	256, // usStackDepth;
-	(void*)1000, // pvParameters
-	1 | portPRIVILEGE_BIT, // priority
-	NULL, // puxStackBuffer;
+TaskParameters_t user_tasks_parameters[] = {
 	{
-		//{(void*)0x50000000, 0x00000800 , portMPU_REGION_READ_WRITE},  // gpio regs
-		{0, 0, 0},
-		{0, 0, 0},
-		{0, 0, 0},
-	}, // xRegions;
+		user_main, // pvTaskCode
+		"blink1", // pcName;
+		512, // usStackDepth;
+		(void*)1000, // pvParameters
+		1, // priority
+		NULL, // puxStackBuffer;
+		{
+			{(void*)0x00000000, 1024 * 1024 , portMPU_REGION_READ_ONLY | portMPU_REGION_CACHEABLE_BUFFERABLE},  // whole flash
+			{0, 0, 0},  // unused slot
+			{0, 0, 0},  // unused slot
+		}, // xRegions;
+	},
+	{
+		user_main, // pvTaskCode
+		"blink2", // pcName;
+		512, // usStackDepth;
+		(void*)888, // pvParameters
+		1, // priority
+		NULL, // puxStackBuffer;
+		{
+			{(void*)0x00000000, 1024 * 1024 , portMPU_REGION_READ_ONLY | portMPU_REGION_CACHEABLE_BUFFERABLE},  // whole flash
+			{0, 0, 0},  // unused slot
+			{0, 0, 0},  // unused slot
+		}, // xRegions;
+	},
+	{0}
 };
 
 int main(void) {
@@ -53,28 +71,13 @@ int main(void) {
 	// enable usb serial communication
 	//usb_io_init();
 
-	//xTaskCreateRestricted(&user_task_parameters, NULL);
-	//TaskHandle_t blink1_handle;
-	xTaskCreate(
-		user_main, /* The function that implements the task. */
-		"blink1", /* Text name for the task. */
-		512, /* Stack depth in words. */
-		(void *)1000, /* Task parameters. */
-		1 | portPRIVILEGE_BIT, /* Priority and mode */
-		NULL /* Handle. */
-	);
-	//vTaskAllocateMPURegions(
-	//	blink1_handle,
-	//	xRegions
-	//);
-	//xTaskCreate(
-	//	user_main_echo, /* The function that implements the task. */
-	//	"echo", /* Text name for the task. */
-	//	256, /* Stack depth in words. */
-	//	NULL, /* Task parameters. */
-	//	( 1 | portPRIVILEGE_BIT ), /* Priority and mode (Privileged in this case). */
-	//	NULL /* Handle. */
-	//);
+	// make a task for each entry in user_tasks_parameters with autoallocated stack
+	void * user_mem = (void*)0x20008000;
+	for (TaskParameters_t * t = user_tasks_parameters; t->pvTaskCode != NULL; t++) {
+		t->puxStackBuffer = align_for_mpu(user_mem, t->usStackDepth);
+		user_mem = t->puxStackBuffer + t->usStackDepth;
+		xTaskCreateRestricted(t, NULL);
+	}
 
 	vTaskStartScheduler();
 
