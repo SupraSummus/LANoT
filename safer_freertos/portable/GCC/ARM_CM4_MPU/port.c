@@ -262,15 +262,23 @@ void vPortSVCHandler( void )
 static void prvSVCHandler(	uint32_t *pulParam )
 {
 uint8_t ucSVCNumber;
+	uint32_t ret = 0;
 
 	/* The stack contains: r0, r1, r2, r3, r12, r14, the return address and
 	xPSR.  The first argument (r0) is pulParam[ 0 ]. */
 	ucSVCNumber = ( ( uint8_t * ) pulParam[ portOFFSET_TO_PC ] )[ -2 ];
 	switch( ucSVCNumber )
 	{
-		case portSVC_START_SCHEDULER	:	portNVIC_SYSPRI1_REG |= portNVIC_SVC_PRI;
-											prvRestoreContextOfFirstTask();
-											break;
+		case portSVC_START_SCHEDULER: {
+			if (!portIS_PRIVILEGED()) {
+				ret = -EACCES;
+				break;
+			}
+			portNVIC_SYSPRI1_REG |= portNVIC_SVC_PRI;
+			prvRestoreContextOfFirstTask();
+			ret = 0;
+			break;
+		}
 
 		case portSVC_YIELD				:	portNVIC_INT_CTRL_REG = portNVIC_PENDSVSET_BIT;
 											/* Barriers are normally not required
@@ -280,22 +288,14 @@ uint8_t ucSVCNumber;
 											__asm volatile( "dsb" ::: "memory" );
 											__asm volatile( "isb" );
 
-											break;
-
-		case portSVC_RAISE_PRIVILEGE	:	__asm volatile
-											(
-												"	mrs r1, control		\n" /* Obtain current control value. */
-												"	bic r1, #1			\n" /* Set privilege bit. */
-												"	msr control, r1		\n" /* Write back new control value. */
-												::: "r1", "memory"
-											);
+											ret = 0;
 											break;
 
 		case portSVC_SYSCALL: {
 			uint32_t syscall = pulParam[0];
-			uint32_t ret = 0;
 			switch (syscall) {
 				case 0: { // no-op
+					ret = 0;
 					break;
 				}
 				#if ( INCLUDE_vTaskDelay == 1 )
@@ -303,6 +303,7 @@ uint8_t ucSVCNumber;
 						// TODO idealy this should be implemented using [...]FromISR functions, but standard version seems to work just fine.
 						// Despite its name vTaskDelay won't call any ISR-unsafe functions (afaik).
 						vTaskDelay(pdMS_TO_TICKS(pulParam[1]));
+						ret = 0;
 						break;
 					}
 				#endif
@@ -311,13 +312,16 @@ uint8_t ucSVCNumber;
 					break;
 				}
 			}
-			pulParam[0] = ret;
+			
 			break;
 		}
 
 		default							:	/* Unknown SVC call. */
+											ret = -ENOSYS;
 											break;
 	}
+
+	pulParam[0] = ret;
 }
 /*-----------------------------------------------------------*/
 
