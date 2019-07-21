@@ -259,24 +259,53 @@ void vPortSVCHandler( void )
 }
 /*-----------------------------------------------------------*/
 
+static uint32_t thread_syscall_handler(uint32_t syscall, uint32_t arg1, uint32_t arg2, uint32_t arg3) {
+	switch (syscall) {
+		case 0: { // no-op
+			return 0;
+		}
+		#if ( INCLUDE_vTaskDelay == 1 )
+			case 1: { // delay ms
+				vTaskDelay(pdMS_TO_TICKS(arg1));
+				return 0;
+			}
+		#endif
+		default: {
+			return -ENOSYS;
+		}
+	}
+}
+
+static __attribute__((naked)) void __thread_syscall_handler_wrapper(void) {
+	__asm volatile (
+		"push {r1, lr}         \n"
+
+		// do syscall body
+		"bl %0                 \n"
+
+		// drop privilege
+		"mrs r1, control       \n" /* r1 = CONTROL */
+		"orr r1, #1            \n" /* r1 = r1 | 1 */
+		"msr control, r1       \n" /* CONTROL = r1 */
+
+		// return to caller
+		"pop {r1, pc}          \n"
+		:: "i" (thread_syscall_handler)
+	);
+}
+
 static void prvSVCHandler(	uint32_t *pulParam )
 {
 uint8_t ucSVCNumber;
-	uint32_t ret = 0;
-
 	/* The stack contains: r0, r1, r2, r3, r12, r14, the return address and
 	xPSR.  The first argument (r0) is pulParam[ 0 ]. */
 	ucSVCNumber = ( ( uint8_t * ) pulParam[ portOFFSET_TO_PC ] )[ -2 ];
 	switch( ucSVCNumber )
 	{
 		case portSVC_START_SCHEDULER: {
-			if (!portIS_PRIVILEGED()) {
-				ret = -EACCES;
-				break;
-			}
+			if (!portIS_PRIVILEGED()) break;
 			portNVIC_SYSPRI1_REG |= portNVIC_SVC_PRI;
 			prvRestoreContextOfFirstTask();
-			ret = 0;
 			break;
 		}
 
@@ -288,41 +317,26 @@ uint8_t ucSVCNumber;
 											__asm volatile( "dsb" ::: "memory" );
 											__asm volatile( "isb" );
 
-											ret = 0;
 											break;
 
 		case portSVC_SYSCALL: {
-			uint32_t syscall = pulParam[0];
-			switch (syscall) {
-				case 0: { // no-op
-					ret = 0;
-					break;
-				}
-				#if ( INCLUDE_vTaskDelay == 1 )
-					case 1: { // delay ms
-						// TODO idealy this should be implemented using [...]FromISR functions, but standard version seems to work just fine.
-						// Despite its name vTaskDelay won't call any ISR-unsafe functions (afaik).
-						vTaskDelay(pdMS_TO_TICKS(pulParam[1]));
-						ret = 0;
-						break;
-					}
-				#endif
-				default: {
-					ret = -ENOSYS;
-					break;
-				}
-			}
-			
-			break;
+			// return to thread svc handler instead of svc caller
+			pulParam[portOFFSET_TO_PC] = (uint32_t)&__thread_syscall_handler_wrapper;
+
+			// raise privilege
+			__asm volatile (
+				"mrs r1, control \n" /* Obtain current control value. */
+				"bic r1, #1      \n" /* Set privilege bit. */
+				"msr control, r1 \n" /* Write back new control value. */
+				::: "memory", "r1"
+			);
 		}
 
 		default							:	/* Unknown SVC call. */
-											ret = -ENOSYS;
 											break;
 	}
-
-	pulParam[0] = ret;
 }
+
 /*-----------------------------------------------------------*/
 
 static void prvRestoreContextOfFirstTask( void )

@@ -7,7 +7,6 @@
 #include "nrf_drv_clock.h"
 
 #include "FreeRTOS.h"
-#include "stream_buffer.h"
 #include "semphr.h"
 #include "event_groups.h"
 

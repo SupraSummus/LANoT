@@ -30,8 +30,8 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
-  ./safer_freertos/tasks.c \
   ./safer_freertos/portable/GCC/ARM_CM4_MPU/port.c \
+  ./safer_freertos/tasks.c \
   ./sys.c \
   ./syscall.S \
   ./user.c \

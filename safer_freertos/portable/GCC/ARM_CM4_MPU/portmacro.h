@@ -115,7 +115,7 @@ typedef struct MPU_SETTINGS
 #define portSVC_START_SCHEDULER				0
 #define portSVC_YIELD						1
 #define portSVC_RAISE_PRIVILEGE				2
-#define portSVC_SYSCALL                    42
+#define portSVC_SYSCALL                     42
 
 /* Scheduler utilities. */
 
@@ -213,11 +213,6 @@ extern void vResetPrivilege( void );
  * @return 1 if the processor is already privileged, 0 otherwise.
  */
 #define portIS_PRIVILEGED()			xIsPrivileged()
-
-/**
- * @brief Raise an SVC request to raise privilege.
-*/
-#define portRAISE_PRIVILEGE()		__asm volatile ( "svc %0 \n" :: "i" ( portSVC_RAISE_PRIVILEGE ) : "memory" );
 
 /**
  * @brief Lowers the privilege level by setting the bit 0 of the CONTROL

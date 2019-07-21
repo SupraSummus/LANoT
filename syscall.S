@@ -7,7 +7,7 @@
     .thumb_func // Use THUMB-2 for the following function.
 
 syscall:
-    // Do syscall. Syscall args are already in place (r0, r1, r2, r3)
-    svc 42
-    // Return. SVC result is already in r0.
-    bx lr
+	// Do syscall. Syscall args are already in place (r0, r1, r2, r3)
+	svc 42
+	// syscall result is already in r0.
+	// no need to `bx LR` because kernel returns control directly to LR

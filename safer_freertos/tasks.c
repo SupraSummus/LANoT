@@ -323,6 +323,10 @@ typedef struct tskTaskControlBlock 			/* The old naming convention is used to pr
 		int iTaskErrno;
 	#endif
 
+	#if( configSEPARATE_SYSCALL_STACK == 1 )
+		StackType_t[configSYSCALL_STACK_SIZE] syscall_stack;
+	#endif
+
 } tskTCB;
 
 /* The old tskTCB name is maintained above then typedefed to the new TCB_t name

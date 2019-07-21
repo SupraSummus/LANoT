@@ -60,6 +60,8 @@
 #define configTICK_RATE_HZ                                                        1024
 #define configMAX_PRIORITIES                                                      ( 3 )
 #define configMINIMAL_STACK_SIZE                                                  ( 60 )
+#define configSYSCALL_STACK_SIZE                                                  ( 60 )
+#define configSEPARATE_SYSCALL_STACK                                              ( 0 )
 #define configTOTAL_HEAP_SIZE                                                     ( 4096 )
 #define configMAX_TASK_NAME_LEN                                                   ( 7 )
 #define configUSE_16_BIT_TICKS                                                    0
@@ -142,10 +144,10 @@ PRIORITY THAN THIS! (higher priorities are lower numeric values. */
 
 /* Interrupt priorities used by the kernel port layer itself.  These are generic
 to all Cortex-M ports, and do not rely on any particular library functions. */
-#define configKERNEL_INTERRUPT_PRIORITY                 configLIBRARY_LOWEST_INTERRUPT_PRIORITY
+#define configKERNEL_INTERRUPT_PRIORITY                                           configLIBRARY_LOWEST_INTERRUPT_PRIORITY
 /* !!!! configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to zero !!!!
 See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY            configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY                                      configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY
 #define configMAX_API_CALL_INTERRUPT_PRIORITY                                     configMAX_SYSCALL_INTERRUPT_PRIORITY
 
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS
