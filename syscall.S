@@ -11,3 +11,4 @@ syscall:
 	svc 42
 	// syscall result is already in r0.
 	// no need to `bx LR` because kernel returns control directly to LR
+	bx lr

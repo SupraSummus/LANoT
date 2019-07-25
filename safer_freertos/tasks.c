@@ -324,7 +324,7 @@ typedef struct tskTaskControlBlock 			/* The old naming convention is used to pr
 	#endif
 
 	#if( configSEPARATE_SYSCALL_STACK == 1 )
-		StackType_t[configSYSCALL_STACK_SIZE] syscall_stack;
+		StackType_t syscall_stack[configSYSCALL_STACK_SIZE];
 	#endif
 
 } tskTCB;

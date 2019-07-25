@@ -278,18 +278,22 @@ static uint32_t thread_syscall_handler(uint32_t syscall, uint32_t arg1, uint32_t
 
 static __attribute__((naked)) void __thread_syscall_handler_wrapper(void) {
 	__asm volatile (
-		"push {r1, lr}         \n"
+		"push {lr}         \n"
+		//"push {r12}            \n"
 
 		// do syscall body
+		//"push {lr} \n"
 		"bl %0                 \n"
+		//"pop {lr} \n"
 
 		// drop privilege
-		"mrs r1, control       \n" /* r1 = CONTROL */
-		"orr r1, #1            \n" /* r1 = r1 | 1 */
-		"msr control, r1       \n" /* CONTROL = r1 */
+		"mrs r12, control      \n" /* r12 = CONTROL */
+		"orr r12, #1           \n" /* r12 = r12 | 1 */
+		"msr control, r12      \n" /* CONTROL = r12 */
 
 		// return to caller
-		"pop {r1, pc}          \n"
+		"pop {pc}          \n"
+		//"pop {pc}              \n"
 		:: "i" (thread_syscall_handler)
 	);
 }
@@ -320,6 +324,9 @@ uint8_t ucSVCNumber;
 											break;
 
 		case portSVC_SYSCALL: {
+			// store original return address in r12
+			pulParam[4] = pulParam[portOFFSET_TO_PC];
+
 			// return to thread svc handler instead of svc caller
 			pulParam[portOFFSET_TO_PC] = (uint32_t)&__thread_syscall_handler_wrapper;
 
