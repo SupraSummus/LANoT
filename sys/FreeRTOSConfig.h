@@ -58,7 +58,7 @@
 #define configUSE_TICKLESS_IDLE_SIMPLE_DEBUG                                      1 /* See into vPortSuppressTicksAndSleep source code for explanation */
 #define configCPU_CLOCK_HZ                                                        ( SystemCoreClock )
 #define configTICK_RATE_HZ                                                        1024
-#define configMAX_PRIORITIES                                                      ( 3 )
+#define configMAX_PRIORITIES                                                      ( 3 ) // 0 -> idle; 1 -> user; 2 -> system
 #define configMINIMAL_STACK_SIZE                                                  ( 60 )
 #define configSYSCALL_STACK_SIZE                                                  ( 60 )
 #define configSEPARATE_SYSCALL_STACK                                              ( 0 )
@@ -67,7 +67,7 @@
 #define configUSE_16_BIT_TICKS                                                    0
 #define configIDLE_SHOULD_YIELD                                                   1
 #define configUSE_MUTEXES                                                         1
-#define configUSE_RECURSIVE_MUTEXES                                               1
+#define configUSE_RECURSIVE_MUTEXES                                               0
 #define configUSE_COUNTING_SEMAPHORES                                             1
 #define configUSE_ALTERNATIVE_API                                                 0    /* Deprecated! */
 #define configQUEUE_REGISTRY_SIZE                                                 2
@@ -95,7 +95,7 @@
 #define configMAX_CO_ROUTINE_PRIORITIES                                           ( 2 )
 
 /* Software timer definitions. */
-#define configUSE_TIMERS                                                          0
+#define configUSE_TIMERS                                                          1
 #define configTIMER_TASK_PRIORITY                                                 ( 2 )
 #define configTIMER_QUEUE_LENGTH                                                  32
 #define configTIMER_TASK_STACK_DEPTH                                              ( 80 )
@@ -131,23 +131,14 @@
 #define INCLUDE_xEventGroupSetBitFromISR                                          1
 #define INCLUDE_xTimerPendFunctionCall                                            1
 
-/* The lowest interrupt priority that can be used in a call to a "set priority"
-function. */
-#define configLIBRARY_LOWEST_INTERRUPT_PRIORITY         0xf
-
-/* The highest interrupt priority that can be used by any interrupt service
-routine that makes calls to interrupt safe FreeRTOS API functions.  DO NOT CALL
-INTERRUPT SAFE FREERTOS API FUNCTIONS FROM ANY INTERRUPT THAT HAS A HIGHER
-PRIORITY THAN THIS! (higher priorities are lower numeric values. */
-#define configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY    1
-
+/* nrf52840 has 3 bits for priority - that means highest prio is 0 and lowest is 7 (shifted left as far as it goes) */
 
 /* Interrupt priorities used by the kernel port layer itself.  These are generic
 to all Cortex-M ports, and do not rely on any particular library functions. */
-#define configKERNEL_INTERRUPT_PRIORITY                                           configLIBRARY_LOWEST_INTERRUPT_PRIORITY
+#define configKERNEL_INTERRUPT_PRIORITY                                           (7 << 5) /* three highest bits */
 /* !!!! configMAX_SYSCALL_INTERRUPT_PRIORITY must not be set to zero !!!!
 See http://www.FreeRTOS.org/RTOS-Cortex-M3-M4.html. */
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY                                      configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY
+#define configMAX_SYSCALL_INTERRUPT_PRIORITY                                      (1 << 5)
 #define configMAX_API_CALL_INTERRUPT_PRIORITY                                     configMAX_SYSCALL_INTERRUPT_PRIORITY
 
 /* Definitions that map the FreeRTOS port interrupt handlers to their CMSIS

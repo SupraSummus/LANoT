@@ -1400,7 +1400,7 @@
 // <e> GPIOTE_ENABLED - nrf_drv_gpiote - GPIOTE peripheral driver - legacy layer
 //==========================================================
 #ifndef GPIOTE_ENABLED
-#define GPIOTE_ENABLED 1
+#define GPIOTE_ENABLED 0
 #endif
 // <o> GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
@@ -1930,7 +1930,7 @@
 // <e> NRFX_GPIOTE_ENABLED - nrfx_gpiote - GPIOTE peripheral driver
 //==========================================================
 #ifndef NRFX_GPIOTE_ENABLED
-#define NRFX_GPIOTE_ENABLED 1
+#define NRFX_GPIOTE_ENABLED 0
 #endif
 // <o> NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS - Number of lower power input pins 
 #ifndef NRFX_GPIOTE_CONFIG_NUM_OF_LOW_POWER_EVENTS
@@ -2531,7 +2531,7 @@
 // <e> NRFX_PRS_ENABLED - nrfx_prs - Peripheral Resource Sharing module
 //==========================================================
 #ifndef NRFX_PRS_ENABLED
-#define NRFX_PRS_ENABLED 1
+#define NRFX_PRS_ENABLED 0
 #endif
 // <q> NRFX_PRS_BOX_0_ENABLED  - Enables box 0 in the module.
  
@@ -4568,7 +4568,7 @@
 // <7=> 7 
 
 #ifndef NRFX_USBD_CONFIG_IRQ_PRIORITY
-#define NRFX_USBD_CONFIG_IRQ_PRIORITY 6
+#define NRFX_USBD_CONFIG_IRQ_PRIORITY 1
 #endif
 
 // <o> NRFX_USBD_CONFIG_DMASCHEDULER_MODE  - USBD DMA scheduler working scheme
@@ -4577,7 +4577,7 @@
 // <1=> Round Robin 
 
 #ifndef NRFX_USBD_CONFIG_DMASCHEDULER_MODE
-#define NRFX_USBD_CONFIG_DMASCHEDULER_MODE 0
+#define NRFX_USBD_CONFIG_DMASCHEDULER_MODE 1
 #endif
 
 // <q> NRFX_USBD_CONFIG_DMASCHEDULER_ISO_BOOST  - Give priority to isochronous transfers
@@ -4590,7 +4590,7 @@
 // <i> function is called, so the option is independent of the algorithm chosen.
 
 #ifndef NRFX_USBD_CONFIG_DMASCHEDULER_ISO_BOOST
-#define NRFX_USBD_CONFIG_DMASCHEDULER_ISO_BOOST 1
+#define NRFX_USBD_CONFIG_DMASCHEDULER_ISO_BOOST 0
 #endif
 
 // <q> NRFX_USBD_CONFIG_ISO_IN_ZLP  - Respond to an IN token on ISO IN endpoint with ZLP when no data is ready
@@ -4743,7 +4743,7 @@
 // <7=> 7 
 
 #ifndef CLOCK_CONFIG_IRQ_PRIORITY
-#define CLOCK_CONFIG_IRQ_PRIORITY 6
+#define CLOCK_CONFIG_IRQ_PRIORITY 1
 #endif
 
 // </e>
@@ -4819,7 +4819,7 @@
 // <7=> 7 
 
 #ifndef POWER_CONFIG_IRQ_PRIORITY
-#define POWER_CONFIG_IRQ_PRIORITY 6
+#define POWER_CONFIG_IRQ_PRIORITY 1
 #endif
 
 // <q> POWER_CONFIG_DEFAULT_DCDCEN  - The default configuration of main DCDC regulator
@@ -5901,7 +5901,7 @@
 // <7=> 7 
 
 #ifndef USBD_CONFIG_IRQ_PRIORITY
-#define USBD_CONFIG_IRQ_PRIORITY 6
+#define USBD_CONFIG_IRQ_PRIORITY 1
 #endif
 
 // <o> USBD_CONFIG_DMASCHEDULER_MODE  - USBD SMA scheduler working scheme
@@ -5910,7 +5910,7 @@
 // <1=> Round Robin 
 
 #ifndef USBD_CONFIG_DMASCHEDULER_MODE
-#define USBD_CONFIG_DMASCHEDULER_MODE 0
+#define USBD_CONFIG_DMASCHEDULER_MODE 1
 #endif
 
 // <q> USBD_CONFIG_DMASCHEDULER_ISO_BOOST  - Give priority to isochronous transfers
@@ -5923,7 +5923,7 @@
 // <i> function is called, so the option is independent of the algorithm chosen.
 
 #ifndef USBD_CONFIG_DMASCHEDULER_ISO_BOOST
-#define USBD_CONFIG_DMASCHEDULER_ISO_BOOST 1
+#define USBD_CONFIG_DMASCHEDULER_ISO_BOOST 0
 #endif
 
 // <q> USBD_CONFIG_ISO_IN_ZLP  - Respond to an IN token on ISO IN endpoint with ZLP when no data is ready
@@ -6082,7 +6082,7 @@
 // <e> APP_TIMER_ENABLED - app_timer - Application timer functionality
 //==========================================================
 #ifndef APP_TIMER_ENABLED
-#define APP_TIMER_ENABLED 1
+#define APP_TIMER_ENABLED 0
 #endif
 // <o> APP_TIMER_CONFIG_RTC_FREQUENCY  - Configure RTC prescaler.
  
@@ -6917,7 +6917,7 @@
 // <e> NRF_BALLOC_ENABLED - nrf_balloc - Block allocator module
 //==========================================================
 #ifndef NRF_BALLOC_ENABLED
-#define NRF_BALLOC_ENABLED 1
+#define NRF_BALLOC_ENABLED 0
 #endif
 // <e> NRF_BALLOC_CONFIG_DEBUG_ENABLED - Enables debug mode in the module.
 //==========================================================
@@ -7112,7 +7112,7 @@
  
 
 #ifndef NRF_MEMOBJ_ENABLED
-#define NRF_MEMOBJ_ENABLED 1
+#define NRF_MEMOBJ_ENABLED 0
 #endif
 
 // <e> NRF_PWR_MGMT_ENABLED - nrf_pwr_mgmt - Power management module
@@ -7256,7 +7256,7 @@
  
 
 #ifndef NRF_SECTION_ITER_ENABLED
-#define NRF_SECTION_ITER_ENABLED 1
+#define NRF_SECTION_ITER_ENABLED 0
 #endif
 
 // <q> NRF_SORTLIST_ENABLED  - nrf_sortlist - Sorted list
@@ -7277,7 +7277,7 @@
  
 
 #ifndef NRF_STRERROR_ENABLED
-#define NRF_STRERROR_ENABLED 1
+#define NRF_STRERROR_ENABLED 0
 #endif
 
 // <q> NRF_TWI_MNGR_ENABLED  - nrf_twi_mngr - TWI transaction manager

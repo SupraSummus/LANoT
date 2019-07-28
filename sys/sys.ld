@@ -5,7 +5,7 @@ GROUP(-lgcc -lc -lnosys)
 OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 ENTRY(Reset_Handler)
 
-INCLUDE memory.ld
+INCLUDE common/memory.ld
 
 /* ….define the variables required by FreeRTOS-MPU. First ensure the section sizes
 are a binary power of two to comply with the MPU region size rules. */

@@ -8,10 +8,10 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "usb_io.h"
+#include "interface.h"
 
-extern void user_main(void*);
-extern void user_main_write(void*);
-extern void user_main_echo(void*);
+#define user_main ((void *)0x00041000)
+#define user_mem ((void *)0x20008000)
 
 void * align_for_mpu(void * p, size_t size) {
     if (size == 0) return p;
@@ -21,6 +21,7 @@ void * align_for_mpu(void * p, size_t size) {
 }
 
 TaskParameters_t user_tasks_parameters[] = {
+	{0},
 	{
 		user_main, // pvTaskCode
 		"blink1", // pcName;
@@ -56,7 +57,7 @@ int main(void) {
 	// disable sd
 	sd_softdevice_disable();
 
-	// set vtor
+	// set vtor point to our mem
 	SCB->VTOR = 0x00026000UL;
 	__DSB();
 
@@ -69,15 +70,18 @@ int main(void) {
 	}
 
 	// enable usb serial communication
-	//usb_io_init();
+	usb_io_init();
+
+	// start interface task (for programming, obtaining status etc)
+	interface_task_create();
 
 	// make a task for each entry in user_tasks_parameters with autoallocated stack
-	void * user_mem = (void*)0x20008000;
-	for (TaskParameters_t * t = user_tasks_parameters; t->pvTaskCode != NULL; t++) {
-		t->puxStackBuffer = align_for_mpu(user_mem, t->usStackDepth);
-		user_mem = t->puxStackBuffer + t->usStackDepth;
-		xTaskCreateRestricted(t, NULL);
-	}
+	//void * task_mem = user_mem;
+	//for (TaskParameters_t * t = user_tasks_parameters; t->pvTaskCode != NULL; t++) {
+	//	t->puxStackBuffer = align_for_mpu(task_mem, t->usStackDepth);
+	//	task_mem = t->puxStackBuffer + t->usStackDepth;
+	//	xTaskCreateRestricted(t, NULL);
+	//}
 
 	vTaskStartScheduler();
 
