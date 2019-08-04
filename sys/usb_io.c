@@ -10,12 +10,14 @@
 #include "semphr.h"
 #include "event_groups.h"
 
+#include "io.h"
+
 static void cdc_acm_user_ev_handler(
 	app_usbd_class_inst_t const * p_inst,
 	app_usbd_cdc_acm_user_event_t event
 );
-
-#include "led.h"
+static int usb_io_read(void * buf, size_t len, void *);
+static int usb_io_write(void * buf, size_t len, void *);
 
 #define CLASSES_COUNT (2)
 
@@ -72,11 +74,17 @@ struct usb_io_status_t {
 
 struct usb_io_status_t statuses[CLASSES_COUNT];
 
-#define DESCRIPTOR_COUNT (4)
-// read fd -> cdc acm class index or -1
-static const int read_classes[DESCRIPTOR_COUNT] = {0 /* stdin */, -1, -1, 1};
-// write fd -> cdc acm class index or -1
-static const int write_classes[DESCRIPTOR_COUNT] = {-1, 0 /* stdout */, 1 /* stderr */, -1};
+// cdc acm class index -> read fd to register or -1
+static const int read_classes[CLASSES_COUNT] = {
+	STDIN_FILENO,
+	2  // in case someone wants to read things written to logging instance
+};
+
+// wcdc acm class index -> write fd to register or -1
+static const int write_classes[CLASSES_COUNT] = {
+	STDOUT_FILENO,
+	STDERR_FILENO
+};
 
 /**
  * now follows generic stuff 
@@ -111,6 +119,10 @@ static void usb_io_class_init(int i) {
 	app_usbd_class_inst_t const * class_cdc_acm = app_usbd_cdc_acm_class_inst_get(class);
 	ret_code_t ret = app_usbd_class_append(class_cdc_acm);
 	APP_ERROR_CHECK(ret);
+
+	// register class under read and write fds
+	io_register(read_classes[i], io_direction_reader, usb_io_read, (void*)i);
+	io_register(write_classes[i], io_direction_writer, usb_io_write, (void*)i);
 }
 
 static void cdc_acm_user_ev_handler(
@@ -154,7 +166,6 @@ static void cdc_acm_user_ev_handler(
 	}
 
 	portEND_SWITCHING_ISR(xHigherPriorityTaskWoken);
-	led_off();
 }
 
 static void usbd_user_ev_handler(app_usbd_event_type_t event) {
@@ -191,13 +202,8 @@ static void usbd_user_ev_handler(app_usbd_event_type_t event) {
 	}
 }
 
-int _read (int file, char *ptr, int len) {
-	if ((file < 0) || (file >= DESCRIPTOR_COUNT) || (read_classes[file] < 0)) {
-		errno = EBADF;
-		return  -1;
-	}
-
-	int class_index = read_classes[file];
+int usb_io_read (void *ptr, size_t len, void * priv) {
+	int class_index = (int)priv;
 	app_usbd_cdc_acm_t const * const class = usb_io_class_get(class_index);
 	assert(class != NULL);
 	struct usb_io_status_t * status = usb_io_status_get(class_index);
@@ -234,13 +240,8 @@ int _read (int file, char *ptr, int len) {
 	return local_rx_size;
 }
 
-int _write(int file, char * buf, int nbytes) {
-	if ((file < 0) || (file >= DESCRIPTOR_COUNT) || (write_classes[file] < 0)) {
-		errno = EBADF;
-		return  -1;
-	}
-
-	int class_index = write_classes[file];
+int usb_io_write(void * buf, size_t nbytes, void * priv) {
+	int class_index = (int)priv;
 	app_usbd_cdc_acm_t const * const class = usb_io_class_get(class_index);
 	assert(class != NULL);
 	struct usb_io_status_t * status = usb_io_status_get(class_index);

@@ -7,8 +7,10 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
-#include "usb_io.h"
+
 #include "interface.h"
+#include "log.h"
+#include "usb_io.h"
 
 #define user_main ((void *)0x00041000)
 #define user_mem ((void *)0x20008000)
@@ -54,12 +56,18 @@ TaskParameters_t user_tasks_parameters[] = {
 int main(void) {
 	ret_code_t ret;
 
+	// enable logging
+	log_init();
+	INFO("Hello there. This is first message in the kernel log.");
+
 	// disable sd
 	sd_softdevice_disable();
+	INFO("SoftDevice disabled");
 
 	// set vtor point to our mem
 	SCB->VTOR = 0x00026000UL;
 	__DSB();
+	INFO("vector table relocated to %p", (void*)SCB->VTOR);
 
 	// enable clock needed by usbd
 	ret = nrf_drv_clock_init();
@@ -68,6 +76,7 @@ int main(void) {
 	while(!nrf_drv_clock_lfclk_is_running()) {
 		/* Just waiting */
 	}
+	INFO("low-frequency clock running");
 
 	// enable usb serial communication
 	usb_io_init();

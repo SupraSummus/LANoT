@@ -15,6 +15,7 @@ SRC_FILES += \
   $(FREERTOS_ROOT)/portable/MemMang/heap_3.c \
   $(FREERTOS_ROOT)/queue.c \
   $(FREERTOS_ROOT)/timers.c \
+  $(FREERTOS_ROOT)/stream_buffer.c \
   $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
   $(SDK_ROOT)/components/libraries/usbd/app_usbd.c \
   $(SDK_ROOT)/components/libraries/usbd/app_usbd_core.c \
@@ -33,6 +34,8 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
   ./interface.c \
+  ./io.c \
+  ./log.c \
   ./safer_freertos/portable/GCC/ARM_CM4_MPU/port.c \
   ./safer_freertos/tasks.c \
   ./sys.c \

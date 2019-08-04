@@ -68,14 +68,18 @@ void interface_main(void * p) {
 
 	led_on();
 
-	#define BUFSIZE (15)
+	#define BUFSIZE (70)  // you dont want to go below 64 (see *_USBD_EPSIZE) here as it seems buggy with usbd implementation
 	char buf[BUFSIZE + 1];
 
 	while (true) {
 		ssize_t s = read(STDIN_FILENO, buf, BUFSIZE);
 		if (s > 0) {
 			buf[s] = '\0';
-			printf("got %d >>>%s<<<\n", s, buf);
+			//write(STDOUT_FILENO, "got >>>", 7);
+			//write(STDOUT_FILENO, buf, s);
+			//write(STDOUT_FILENO, "<<<\n", 4);
+			printf("got %d:\n", s);
+			write(STDOUT_FILENO, buf, s);
 		} else {
 			printf("read returned %d\n", s);
 		}
