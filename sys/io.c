@@ -3,6 +3,7 @@
 #include <unistd.h>
 
 #include "io.h"
+#include "log.h"
 
 struct io_endpoint_t {
 	io_handler_t * handler;
@@ -41,6 +42,7 @@ int _write(int fd, char * buf, int len) {
 }
 
 void io_register (int fd, io_direction_t dir, io_handler_t * handler, void * priv) {
+	INFO("registering io handler fd=%d direction=%d handler=%p data=%p", fd, dir, handler, priv);
 	assert(handler != NULL);
 	struct io_endpoint_t * ep = get_endpoint(fd, dir);
 	assert(ep != NULL);

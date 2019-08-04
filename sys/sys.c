@@ -58,7 +58,6 @@ int main(void) {
 
 	// enable logging
 	log_init();
-	INFO("Hello there. This is first message in the kernel log.");
 
 	// disable sd
 	sd_softdevice_disable();

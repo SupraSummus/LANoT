@@ -3,11 +3,13 @@
 
 #include <stdio.h>
 
-#define WARN(fmt, ...) //(log_write_format("W " __FILE__ ": " fmt "\n", ##__VA_ARGS__))
-#define INFO(fmt, ...) //(log_write_format("I " __FILE__ ": " fmt "\n", ##__VA_ARGS__))
+// log is listening on fd 2 (stderr) and using fd 3 as backend
+#define LOG_BACKEND_FD (3)
+#define LOG_TASK_PRIORITY (1)
+
+#define WARN(fmt, ...) (fprintf(stderr, "W " __FILE__ ": " fmt "\n", ##__VA_ARGS__))
+#define INFO(fmt, ...) (fprintf(stderr, "I " __FILE__ ": " fmt "\n", ##__VA_ARGS__))
 
 extern void log_init(void);
-extern void log_write(const char * buf, size_t len);
-//extern void log_write_format(const char * fmt, ...);
 
 #endif

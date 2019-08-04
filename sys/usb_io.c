@@ -11,6 +11,7 @@
 #include "event_groups.h"
 
 #include "io.h"
+#include "log.h"
 
 static void cdc_acm_user_ev_handler(
 	app_usbd_class_inst_t const * p_inst,
@@ -77,13 +78,13 @@ struct usb_io_status_t statuses[CLASSES_COUNT];
 // cdc acm class index -> read fd to register or -1
 static const int read_classes[CLASSES_COUNT] = {
 	STDIN_FILENO,
-	2  // in case someone wants to read things written to logging instance
+	3  // in case someone wants to read things written to logging instance
 };
 
-// wcdc acm class index -> write fd to register or -1
+// cdc acm class index -> write fd to register or -1
 static const int write_classes[CLASSES_COUNT] = {
 	STDOUT_FILENO,
-	STDERR_FILENO
+	3
 };
 
 /**
@@ -152,6 +153,7 @@ static void cdc_acm_user_ev_handler(
 
 		case APP_USBD_CDC_ACM_USER_EVT_RX_DONE: {
 			xSemaphoreGiveFromISR(status->rx_done, &xHigherPriorityTaskWoken);
+			INFO("random log from inside ISR (woken: %s)", xHigherPriorityTaskWoken ? "yes" : "no");
 			break;
 		}
 
@@ -271,6 +273,8 @@ int usb_io_write(void * buf, size_t nbytes, void * priv) {
 
 void usb_io_init(void) {
 	ret_code_t ret;
+
+	INFO("initializing usb");
 
 	// init usbd
 	static const app_usbd_config_t m_usbd_config = {

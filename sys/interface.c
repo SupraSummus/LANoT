@@ -97,7 +97,7 @@ void interface_main(void * p) {
 	(void)handle_command;
 }
 
-#define INTERFACE_STACK_DEPTH (512)
+#define INTERFACE_STACK_DEPTH (128)
 static StackType_t interface_stack[INTERFACE_STACK_DEPTH];
 static StaticTask_t interface_task;
 
