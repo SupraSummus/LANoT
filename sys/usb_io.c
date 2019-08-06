@@ -60,6 +60,7 @@ static app_usbd_cdc_acm_t const * usb_io_class_get(int i) {
 
 struct usb_io_status_t {
 	#define USB_IO_ACTIVE (0x01)
+	StaticEventGroup_t _usb_io_status;
 	EventGroupHandle_t usb_io_status;
 
 	SemaphoreHandle_t read_mutex;
@@ -102,7 +103,7 @@ static void usb_io_class_init(int i) {
 	struct usb_io_status_t * status = usb_io_status_get(i);
 	assert(status != NULL);
 
-	status->usb_io_status = xEventGroupCreate();
+	status->usb_io_status = xEventGroupCreateStatic(&status->_usb_io_status);
 	status->read_mutex = xSemaphoreCreateMutexStatic(&status->_read_mutex);
 	status->rx_done = xSemaphoreCreateBinaryStatic(&status->_rx_done);
 	status->write_mutex = xSemaphoreCreateMutexStatic(&status->_write_mutex);

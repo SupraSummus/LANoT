@@ -94,10 +94,6 @@ SECTIONS {
 
 	__etext = .;
 
-	freertos_system_calls : {
-		*(freertos_system_calls)
-	} > FLASH_APP_SYSCALLS
-
 	.data : AT (__etext) {
 		. = ALIGN(4);
         __data_start__ = .;

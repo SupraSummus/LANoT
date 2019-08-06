@@ -1,4 +1,4 @@
-/* taken from https://gist.github.com/thomask77/65591d78070ace68885d3fd05cdebe3a */
+/* based on https://gist.github.com/thomask77/65591d78070ace68885d3fd05cdebe3a */
 
 // -------------------- Retarget Locks --------------------
 //
@@ -67,29 +67,6 @@ void __malloc_unlock(struct _reent *r)
 
 
 /* standard semaphore locking */
-
-void __retarget_lock_init(_LOCK_T *lock_ptr)
-{
-    *lock_ptr = (_LOCK_T)xSemaphoreCreateMutex();
-}
-
-
-void __retarget_lock_init_recursive(_LOCK_T *lock_ptr)
-{
-    *lock_ptr = (_LOCK_T)xSemaphoreCreateRecursiveMutex();
-}
-
-
-void __retarget_lock_close(_LOCK_T lock)
-{
-    vSemaphoreDelete((SemaphoreHandle_t)lock);
-}
-
-
-void __retarget_lock_close_recursive(_LOCK_T lock)
-{
-    vSemaphoreDelete((SemaphoreHandle_t)lock);
-}
 
 
 void __retarget_lock_acquire(_LOCK_T lock)

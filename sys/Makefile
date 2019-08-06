@@ -12,7 +12,6 @@ $(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
 SRC_FILES += \
   $(FREERTOS_ROOT)/event_groups.c \
   $(FREERTOS_ROOT)/list.c \
-  $(FREERTOS_ROOT)/portable/MemMang/heap_3.c \
   $(FREERTOS_ROOT)/queue.c \
   $(FREERTOS_ROOT)/timers.c \
   $(FREERTOS_ROOT)/stream_buffer.c \
@@ -33,6 +32,7 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
+  ./freertos_and_newlib/retarget_locks_static.c \
   ./interface.c \
   ./io.c \
   ./log.c \
@@ -115,10 +115,10 @@ LDFLAGS += -Wl,--gc-sections
 # use newlib in nano version
 LDFLAGS += --specs=nano.specs
 
-nrf52840_xxaa: CFLAGS += -D__HEAP_SIZE=8192
-nrf52840_xxaa: CFLAGS += -D__STACK_SIZE=8192
-nrf52840_xxaa: ASMFLAGS += -D__HEAP_SIZE=8192
-nrf52840_xxaa: ASMFLAGS += -D__STACK_SIZE=8192
+nrf52840_xxaa: CFLAGS += -D__HEAP_SIZE=4096
+nrf52840_xxaa: CFLAGS += -D__STACK_SIZE=4096
+nrf52840_xxaa: ASMFLAGS += -D__HEAP_SIZE=4096
+nrf52840_xxaa: ASMFLAGS += -D__STACK_SIZE=4096
 
 # Add standard libraries at the very end of the linker input, after all objects
 # that may need symbols provided by these libraries.

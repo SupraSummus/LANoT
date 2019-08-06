@@ -75,7 +75,7 @@ int main(void) {
 	while(!nrf_drv_clock_lfclk_is_running()) {
 		/* Just waiting */
 	}
-	INFO("low-frequency clock running");
+	INFO("low-frequency clock started");
 
 	// enable usb serial communication
 	usb_io_init();
