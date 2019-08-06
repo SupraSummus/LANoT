@@ -1,5 +1,3 @@
-Environment for [Fanstel BT840x/USB840x modules](https://www.fanstel.com/bt840) using [nRF52840 SoC](https://www.nordicsemi.com/?sc_itemid=%7B2DC10BA5-A76E-40F8-836E-E2FC65803A71%7D).
-
 Compilation
 -----------
 
