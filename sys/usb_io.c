@@ -141,6 +141,7 @@ static void cdc_acm_user_ev_handler(
 	switch (event) {
 		case APP_USBD_CDC_ACM_USER_EVT_PORT_OPEN: {
 			// allow transfer
+			INFO("port %d opened", i);
 			ret = xEventGroupSetBitsFromISR(status->usb_io_status, USB_IO_ACTIVE, &xHigherPriorityTaskWoken);
 			assert(ret == pdPASS);
 			break;
@@ -148,13 +149,13 @@ static void cdc_acm_user_ev_handler(
 
 		case APP_USBD_CDC_ACM_USER_EVT_PORT_CLOSE: {
 			// disallow transfer
+			INFO("port %d closed", i);
 			xEventGroupClearBitsFromISR(status->usb_io_status, USB_IO_ACTIVE);
 			break;
 		}
 
 		case APP_USBD_CDC_ACM_USER_EVT_RX_DONE: {
 			xSemaphoreGiveFromISR(status->rx_done, &xHigherPriorityTaskWoken);
-			INFO("random log from inside ISR (woken: %s)", xHigherPriorityTaskWoken ? "yes" : "no");
 			break;
 		}
 
@@ -183,20 +184,24 @@ static void usbd_user_ev_handler(app_usbd_event_type_t event) {
 			break;
 
 		case APP_USBD_EVT_STOPPED:
+			INFO("APP_USBD_EVT_STOPPED");
 			app_usbd_disable();
 			break;
 
 		case APP_USBD_EVT_POWER_DETECTED:
+			INFO("power detected");
 			if (!nrf_drv_usbd_is_enabled()) {
 				app_usbd_enable();
 			}
 			break;
 
 		case APP_USBD_EVT_POWER_REMOVED:
+			INFO("power removed");
 			app_usbd_stop();
 			break;
 
 		case APP_USBD_EVT_POWER_READY:
+			INFO("power ready");
 			app_usbd_start();
 			break;
 

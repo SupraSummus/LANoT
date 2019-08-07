@@ -67,7 +67,7 @@ void log_task_main(void * p) {
 
 		size_t skipped = __sync_lock_test_and_set(&log_skipped_bytes, 0);
 		if (skipped > 0) {
-			len = snprintf(log_task_buffer, LOG_TASK_BUFFER_SIZE, "!!! %d bytes skipped\n", skipped);
+			len = snprintf(log_task_buffer, LOG_TASK_BUFFER_SIZE, "\n!!! %d bytes skipped !!!\n", skipped);
 			len --;  // skip terminating \0
 			if (len > LOG_TASK_BUFFER_SIZE) {  // we didnt fit into buffer
 				len = LOG_TASK_BUFFER_SIZE;

@@ -40,6 +40,7 @@ SRC_FILES += \
   ./safer_freertos/tasks.c \
   ./sys.c \
   ./usb_io.c \
+  ./user_task.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \

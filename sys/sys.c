@@ -12,46 +12,12 @@
 #include "log.h"
 #include "usb_io.h"
 
-#define user_main ((void *)0x00041000)
-#define user_mem ((void *)0x20008000)
-
-void * align_for_mpu(void * p, size_t size) {
-    if (size == 0) return p;
-    uint32_t remainder = (uint32_t)p % size;
-    if (remainder == 0) return p;
-    return (void *)((uint32_t)p + size - remainder);
-}
-
-TaskParameters_t user_tasks_parameters[] = {
-	{0},
-	{
-		user_main, // pvTaskCode
-		"blink1", // pcName;
-		512, // usStackDepth;
-		(void*)1000, // pvParameters
-		1, // priority
-		NULL, // puxStackBuffer;
-		{
-			{(void*)0x00000000, 1024 * 1024 , portMPU_REGION_READ_ONLY | portMPU_REGION_CACHEABLE_BUFFERABLE},  // whole flash
-			{0, 0, 0},  // unused slot
-			{0, 0, 0},  // unused slot
-		}, // xRegions;
-	},
-	{
-		user_main, // pvTaskCode
-		"blink2", // pcName;
-		512, // usStackDepth;
-		(void*)888, // pvParameters
-		1, // priority
-		NULL, // puxStackBuffer;
-		{
-			{(void*)0x00000000, 1024 * 1024 , portMPU_REGION_READ_ONLY | portMPU_REGION_CACHEABLE_BUFFERABLE},  // whole flash
-			{0, 0, 0},  // unused slot
-			{0, 0, 0},  // unused slot
-		}, // xRegions;
-	},
-	{0}
-};
+//void * align_for_mpu(void * p, size_t size) {
+//    if (size == 0) return p;
+//    uint32_t remainder = (uint32_t)p % size;
+//    if (remainder == 0) return p;
+//    return (void *)((uint32_t)p + size - remainder);
+//}
 
 int main(void) {
 	ret_code_t ret;
@@ -82,14 +48,6 @@ int main(void) {
 
 	// start interface task (for programming, obtaining status etc)
 	interface_task_create();
-
-	// make a task for each entry in user_tasks_parameters with autoallocated stack
-	//void * task_mem = user_mem;
-	//for (TaskParameters_t * t = user_tasks_parameters; t->pvTaskCode != NULL; t++) {
-	//	t->puxStackBuffer = align_for_mpu(task_mem, t->usStackDepth);
-	//	task_mem = t->puxStackBuffer + t->usStackDepth;
-	//	xTaskCreateRestricted(t, NULL);
-	//}
 
 	vTaskStartScheduler();
 
