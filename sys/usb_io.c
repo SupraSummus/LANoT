@@ -72,6 +72,13 @@ struct usb_io_status_t {
 	StaticSemaphore_t _write_mutex;
 	SemaphoreHandle_t tx_done;
 	StaticSemaphore_t _tx_done;
+
+	/**
+	 * synchronous mode wont use interrupts
+	 *
+	 * currently it's implemented only for write request
+	 */
+	bool synchronous_mode;
 };
 
 struct usb_io_status_t statuses[CLASSES_COUNT];
@@ -210,7 +217,7 @@ static void usbd_user_ev_handler(app_usbd_event_type_t event) {
 	}
 }
 
-int usb_io_read (void *ptr, size_t len, void * priv) {
+static int usb_io_read (void *ptr, size_t len, void * priv) {
 	int class_index = (int)priv;
 	app_usbd_cdc_acm_t const * const class = usb_io_class_get(class_index);
 	assert(class != NULL);
@@ -248,7 +255,7 @@ int usb_io_read (void *ptr, size_t len, void * priv) {
 	return local_rx_size;
 }
 
-int usb_io_write(void * buf, size_t nbytes, void * priv) {
+static int usb_io_write(void * buf, size_t nbytes, void * priv) {
 	int class_index = (int)priv;
 	app_usbd_cdc_acm_t const * const class = usb_io_class_get(class_index);
 	assert(class != NULL);
@@ -257,22 +264,44 @@ int usb_io_write(void * buf, size_t nbytes, void * priv) {
 
 	ret_code_t ret;
 
-	xEventGroupWaitBits(
-		status->usb_io_status, USB_IO_ACTIVE,
-		pdFALSE, pdFALSE,
-		portMAX_DELAY
-	);
+	if (status->synchronous_mode) {  // FIXME this should be atomic check
+		// wait for port to be online
+		while (!(xEventGroupGetBitsFromISR(status->usb_io_status) & USB_IO_ACTIVE)) {
+			nrfx_usbd_irq_handler();
+		}
 
-	xSemaphoreTake(status->write_mutex, portMAX_DELAY);
-
-		// do tx
-		ret = app_usbd_cdc_acm_write(class, buf, nbytes);
+		// try to write data until it succedes
+		while ((ret = app_usbd_cdc_acm_write(class, buf, nbytes)) == NRFX_ERROR_BUSY) {
+			nrfx_usbd_irq_handler();
+		}
 		APP_ERROR_CHECK(ret);
 
 		// wait for tx done
-		xSemaphoreTake(status->tx_done, portMAX_DELAY);
+		// FIXME thread handling previous transfer (in async mode) may be waiting for tx_done and we will take its tx_done turn
+		while (xSemaphoreTakeFromISR(status->tx_done, NULL) == pdFALSE) {
+			nrfx_usbd_irq_handler();
+		}
 
-	xSemaphoreGive(status->write_mutex);
+	} else {
+		// wait for port to be online
+		xEventGroupWaitBits(
+			status->usb_io_status, USB_IO_ACTIVE,
+			pdFALSE, pdFALSE,
+			portMAX_DELAY
+		);
+
+		xSemaphoreTake(status->write_mutex, portMAX_DELAY);
+
+			// do tx
+			ret = app_usbd_cdc_acm_write(class, buf, nbytes);
+			APP_ERROR_CHECK(ret);
+
+			// wait for tx done
+			xSemaphoreTake(status->tx_done, portMAX_DELAY);
+
+		xSemaphoreGive(status->write_mutex);
+
+	}
 
 	return nbytes;
 }

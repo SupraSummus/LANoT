@@ -57,12 +57,8 @@ static bool handle_command(void) {
 	return true;
 }
 
-#include "led.h"
-
 void interface_main(void * p) {
 	(void)p;
-
-	led_on();
 
 	INFO("starting");
 	while (handle_command());
