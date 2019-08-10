@@ -6,50 +6,100 @@
 #include "log.h"
 
 struct io_endpoint_t {
-	io_handler_t * handler;
-	void * priv;
+	io_handler_t * read_handler;
+	void * read_handler_private_data;
+
+	io_handler_t * write_handler;
+	void * write_handler_private_data;
+
+	io_use_synchronous_mode_handler_t * use_synchronous_mode_handler;
+	void * use_synchronous_mode_handler_private_data;
 };
 
-static struct io_endpoint_t endpoints[IO_FD_COUNT * 2];
+static struct io_endpoint_t endpoints[IO_FD_COUNT];
 
-inline static struct io_endpoint_t * get_endpoint(int fd, io_direction_t direction) {
-	int ep_index = -1;
+inline static struct io_endpoint_t * get_endpoint(int fd) {
 	if (fd < 0 || fd >= IO_FD_COUNT) return NULL;  // fd out of range
-	if (direction == io_direction_reader) ep_index = fd * 2;
-	if (direction == io_direction_writer) ep_index = fd * 2 + 1;
-	if (ep_index == -1) return NULL; // unknown direction
-	return &endpoints[ep_index];
+	return &endpoints[fd];
 }
 
-inline static int io_call (int fd, io_direction_t dir, char *ptr, int len) {
-	struct io_endpoint_t * endpoint = get_endpoint(fd, dir);
+int _read(int fd, char * buf, int len) {
+	struct io_endpoint_t * endpoint = get_endpoint(fd);
 
 	//  fd out of range     no handler registered
-	if (endpoint == NULL || endpoint->handler == NULL) {
+	if (endpoint == NULL || endpoint->read_handler == NULL) {
 		errno = EBADF;
 		return  -1;
 	}
 
-	return endpoint->handler(ptr, len, endpoint->priv);
-}
-
-int _read(int fd, char * buf, int len) {
-	return io_call(fd, io_direction_reader, buf, len);
+	return endpoint->read_handler(buf, len, endpoint->read_handler_private_data);
 }
 
 int _write(int fd, char * buf, int len) {
-	return io_call(fd, io_direction_writer, buf, len);
+	struct io_endpoint_t * endpoint = get_endpoint(fd);
+
+	//  fd out of range     no handler registered
+	if (endpoint == NULL || endpoint->write_handler == NULL) {
+		errno = EBADF;
+		return  -1;
+	}
+
+	return endpoint->write_handler(buf, len, endpoint->write_handler_private_data);
 }
 
-void io_register (int fd, io_direction_t dir, io_handler_t * handler, void * priv) {
+int io_use_synchronous_mode(int fd) {
+	struct io_endpoint_t * endpoint = get_endpoint(fd);
+
+	// fd out of range
+	if (endpoint == NULL) {
+		errno = EBADF;
+		return  -1;
+	}
+
+	// no handler registered
+	if (endpoint->use_synchronous_mode_handler == NULL) {
+		errno = ENOTSUP;
+		return -1;
+	}
+
+	return endpoint->use_synchronous_mode_handler(endpoint->use_synchronous_mode_handler_private_data);
+}
+
+void io_register_read_handler (int fd, io_handler_t * handler, void * priv) {
 	INFO(
-		"io_register fd=%d dir=%d handler=%p data=%p",
-		fd, dir, handler, priv
+		"io_register_read_handler fd=%d handler=%p priv=%p",
+		fd, handler, priv
 	);
 	assert(handler != NULL);
-	struct io_endpoint_t * ep = get_endpoint(fd, dir);
+	struct io_endpoint_t * ep = get_endpoint(fd);
 	assert(ep != NULL);
-	assert(ep->handler == NULL);
-	ep->handler = handler;
-	ep->priv = priv;
+	assert(ep->read_handler == NULL);
+	ep->read_handler = handler;
+	ep->read_handler_private_data = priv;
+}
+
+void io_register_write_handler (int fd, io_handler_t * handler, void * priv) {
+	INFO(
+		"io_register_write_handler fd=%d handler=%p priv=%p",
+		fd, handler, priv
+	);
+	assert(handler != NULL);
+	struct io_endpoint_t * ep = get_endpoint(fd);
+	assert(ep != NULL);
+	assert(ep->write_handler == NULL);
+	ep->write_handler = handler;
+	ep->write_handler_private_data = priv;
+}
+
+void io_register_use_synchronous_mode_handler (int fd, io_use_synchronous_mode_handler_t * handler, void * priv) {
+	INFO(
+		"io_register_use_synchronous_mode_handler fd=%d handler=%p priv=%p",
+		fd, handler, priv
+	);
+	assert(handler != NULL);
+	struct io_endpoint_t * ep = get_endpoint(fd);
+	assert(ep != NULL);
+	assert(ep->use_synchronous_mode_handler == NULL);
+	ep->use_synchronous_mode_handler = handler;
+	ep->use_synchronous_mode_handler_private_data = priv;
 }

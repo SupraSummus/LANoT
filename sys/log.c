@@ -1,6 +1,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "FreeRTOS.h"
 #include "stream_buffer.h"
@@ -54,7 +55,7 @@ static size_t dropped_bytes = 0;
 /**
  * setting this switch to true will cause buffering to be skipped
  */
-static bool synchronous_opration = false;
+static bool synchronous_operation = false;
 
 static TaskHandle_t log_task_handle;
 
@@ -103,7 +104,7 @@ static int log_write (void * buf, size_t len, void * priv) {
 	(void)priv;
 
 	// synchronous mode bypasses the buffer
-	if (synchronous_opration) {
+	if (synchronous_operation) {
 		return write(LOG_BACKEND_FD, buf, len);
 	}
 
@@ -164,9 +165,30 @@ static void log_task_discard_main(void * p) {
 	}
 }
 
+static int log_use_synchronous_mode(void * p) {
+	(void)p;
+	int ret;
+
+	portENTER_CRITICAL();
+		if (synchronous_operation) {
+			errno = EPERM;
+			ret = -1;
+		} else {
+			INFO("enabling synchronous logging");
+			synchronous_operation = true;
+			io_use_synchronous_mode(LOG_BACKEND_FD);
+			process_buffer();
+			ret = 0;
+		}
+	portEXIT_CRITICAL();
+
+	return ret;
+}
+
 void log_init (void) {
 	//synchronous_opration = true;
-	io_register(STDERR_FILENO, io_direction_writer, log_write, NULL);
+	io_register_write_handler(STDERR_FILENO, log_write, NULL);
+	io_register_use_synchronous_mode_handler(STDERR_FILENO, log_use_synchronous_mode, NULL);
 
 	INFO("initializing log on fd=%d with backend fd=%d", STDERR_FILENO, LOG_BACKEND_FD);
 

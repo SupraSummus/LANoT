@@ -9,6 +9,7 @@
 #include "task.h"
 
 #include "interface.h"
+#include "io.h"
 #include "log.h"
 #include "usb_io.h"
 
@@ -48,6 +49,8 @@ int main(void) {
 
 	// start interface task (for programming, obtaining status etc)
 	interface_task_create();
+
+	//io_use_synchronous_mode(3);
 
 	vTaskStartScheduler();
 

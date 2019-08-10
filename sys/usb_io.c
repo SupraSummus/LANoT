@@ -59,6 +59,9 @@ static app_usbd_cdc_acm_t const * usb_io_class_get(int i) {
 }
 
 struct usb_io_status_t {
+	/**
+	 * read, write, port-open locks
+	 */
 	#define USB_IO_ACTIVE (0x01)
 	StaticEventGroup_t _usb_io_status;
 	EventGroupHandle_t usb_io_status;
@@ -74,11 +77,14 @@ struct usb_io_status_t {
 	StaticSemaphore_t _tx_done;
 
 	/**
-	 * synchronous mode wont use interrupts
-	 *
-	 * currently it's implemented only for write request
+	 * synchronous mode wont use interrupts for write operations
 	 */
 	bool synchronous_mode;
+
+	/**
+	 * reference to usb class driver instance
+	 */
+	app_usbd_cdc_acm_t const * class;
 };
 
 struct usb_io_status_t statuses[CLASSES_COUNT];
@@ -105,6 +111,24 @@ static struct usb_io_status_t * usb_io_status_get(int i) {
 	return statuses + i;
 }
 
+static int usb_io_use_synchornous_mode(void * priv) {
+	struct usb_io_status_t * status = priv;
+	int ret;
+
+	portENTER_CRITICAL();
+		if (!status->synchronous_mode) {
+			INFO("enabling synchronous mode on port %p", status);
+			status->synchronous_mode = true;
+			ret = 0;
+		} else {
+			errno = EPERM;
+			ret = -1;
+		}
+	portEXIT_CRITICAL();
+
+	return ret;
+}
+
 static void usb_io_class_init(int i) {
 	// init status struct
 	struct usb_io_status_t * status = usb_io_status_get(i);
@@ -129,9 +153,12 @@ static void usb_io_class_init(int i) {
 	ret_code_t ret = app_usbd_class_append(class_cdc_acm);
 	APP_ERROR_CHECK(ret);
 
+	status->class = class;
+
 	// register class under read and write fds
-	io_register(read_classes[i], io_direction_reader, usb_io_read, (void*)i);
-	io_register(write_classes[i], io_direction_writer, usb_io_write, (void*)i);
+	io_register_read_handler(read_classes[i], usb_io_read, (void*)i);
+	io_register_write_handler(write_classes[i], usb_io_write, (void*)i);
+	io_register_use_synchronous_mode_handler(write_classes[i], usb_io_use_synchornous_mode, status);
 }
 
 static void cdc_acm_user_ev_handler(
