@@ -1,42 +1,56 @@
-#include <stdio.h>
+#include "nrf52840.h"
 
 #include "log.h"
 
 enum {r0, r1, r2, r3, r12, lr, pc, psr};
 
-/*
 void Hard_Fault_Handler(uint32_t stack[]) {
-	static const int msg_len = 80;
-	static char msg[msg_len];
+	log_use_synchronous_mode();
+	INFO("in Hard_Fault_Handler");
 
-	PANIC("In Hard Fault Handler");
-
-	snprintf(msg, msg_len, "SCB->HFSR = 0x%08lx\n", SCB->HFSR);
-	printf(msg);
+	INFO("SCB->HFSR = 0x%08lx", SCB->HFSR);
 
 	if ((SCB->HFSR & (1 << 30)) != 0) {
-		printf("Forced Hard Fault\n");
-		snprintf(msg, msg_len, "SCB->CFSR = 0x%08lx\n", SCB->CFSR);
-		printf(msg);
-		if((SCB->CFSR & 0xFFFF0000) != 0) {
-			printUsageErrorMsg(SCB->CFSR);
-		}
+		INFO("Forced Hard Fault");
+		INFO("SCB->CFSR = 0x%08lx", SCB->CFSR);
+		//if((SCB->CFSR & 0xFFFF0000) != 0) {
+		//	printUsageErrorMsg(SCB->CFSR);
+		//}
 	}
 
-	snprintf(msg, "r0  = 0x%08lx\n", stack[r0]);  printf(msg);
-	snprintf(msg, "r1  = 0x%08lx\n", stack[r1]);  printf(msg);
-	snprintf(msg, "r2  = 0x%08lx\n", stack[r2]);  printf(msg);
-	snprintf(msg, "r3  = 0x%08lx\n", stack[r3]);  printf(msg);
-	snprintf(msg, "r12 = 0x%08lx\n", stack[r12]); printf(msg);
-	snprintf(msg, "lr  = 0x%08lx\n", stack[lr]);  printf(msg);
-	snprintf(msg, "pc  = 0x%08lx\n", stack[pc]);  printf(msg);
-	snprintf(msg, "psr = 0x%08lx\n", stack[psr]); printf(msg);
+	INFO("r0  = 0x%08lx", stack[r0]);
+	INFO("r1  = 0x%08lx", stack[r1]);
+	INFO("r2  = 0x%08lx", stack[r2]);
+	INFO("r3  = 0x%08lx", stack[r3]);
+	INFO("r12 = 0x%08lx", stack[r12]);
+	INFO("lr  = 0x%08lx", stack[lr]);
+	INFO("pc  = 0x%08lx", stack[pc]);
+	INFO("psr = 0x%08lx", stack[psr]);
+
+	abort();
 }
 
 void HardFault_Handler (void) {
-	asm volatile(
+	__asm volatile(
 		" mrs r0,msp    \n"
 		" b Hard_Fault_Handler \n"
 	);
 }
-*/
+
+void MemoryManagement_Handler (void) {
+	log_use_synchronous_mode();
+	INFO("in MemoryManagement_Handler");
+	abort();
+}
+
+void BusFault_Handler (void) {
+	log_use_synchronous_mode();
+	INFO("in BusFault_Handler");
+	abort();
+}
+
+void UsageFault_Handler (void) {
+	log_use_synchronous_mode();
+	INFO("in UsageFault_Handler");
+	abort();
+}

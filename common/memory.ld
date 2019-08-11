@@ -11,6 +11,6 @@ MEMORY {
 
 	RAM                       (rwx) : ORIGIN = 0x20000000, LENGTH = 256k
 	RAM_SD                    (rwx) : ORIGIN = 0x20000000, LENGTH = 0x22e0
-	RAM_APP_SYS               (rwx) : ORIGIN = 0x200022e0, LENGTH = 0x5d20
-	RAM_APP_USER              (rwx) : ORIGIN = 0x20008000, LENGTH = 224k
+	RAM_APP_SYS               (rwx) : ORIGIN = 0x200022e0, LENGTH = 0xdd20
+	RAM_APP_USER              (rwx) : ORIGIN = 0x20010000, LENGTH = 192k
 }

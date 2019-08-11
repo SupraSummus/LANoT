@@ -9,7 +9,6 @@
 #include "task.h"
 
 #include "interface.h"
-#include "io.h"
 #include "log.h"
 #include "usb_io.h"
 
@@ -31,6 +30,7 @@ int main(void) {
 	INFO("SoftDevice disabled");
 
 	// set vtor point to our mem
+	// TODO deduplicate with memory.ld / linker script
 	SCB->VTOR = 0x00026000UL;
 	__DSB();
 	INFO("vector table relocated to %p", (void*)SCB->VTOR);
@@ -49,8 +49,6 @@ int main(void) {
 
 	// start interface task (for programming, obtaining status etc)
 	interface_task_create();
-
-	//io_use_synchronous_mode(3);
 
 	vTaskStartScheduler();
 

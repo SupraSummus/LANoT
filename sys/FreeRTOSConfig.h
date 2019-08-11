@@ -59,6 +59,7 @@
 #define configCPU_CLOCK_HZ                                                        ( SystemCoreClock )
 #define configTICK_RATE_HZ                                                        1024
 #define configMAX_PRIORITIES                                                      ( 3 ) // 0 -> idle; 1 -> user; 2 -> system
+#define SYSTEM_TASK_PRIORITY                                                      (2)
 #define configMINIMAL_STACK_SIZE                                                  ( 60 )
 #define configSYSCALL_STACK_SIZE                                                  ( 60 )
 #define configSEPARATE_SYSCALL_STACK                                              ( 0 )
@@ -72,7 +73,7 @@
 #define configUSE_ALTERNATIVE_API                                                 0    /* Deprecated! */
 #define configQUEUE_REGISTRY_SIZE                                                 2
 #define configUSE_QUEUE_SETS                                                      0
-#define configUSE_TIME_SLICING                                                    0
+#define configUSE_TIME_SLICING                                                    (1)
 #define configUSE_NEWLIB_REENTRANT                                                0
 #define configENABLE_BACKWARD_COMPATIBILITY                                       0
 #define configSUPPORT_STATIC_ALLOCATION                                           1
@@ -96,7 +97,7 @@
 
 /* Software timer definitions. */
 #define configUSE_TIMERS                                                          1
-#define configTIMER_TASK_PRIORITY                                                 ( 2 )
+#define configTIMER_TASK_PRIORITY                                                 (SYSTEM_TASK_PRIORITY)
 #define configTIMER_QUEUE_LENGTH                                                  32
 #define configTIMER_TASK_STACK_DEPTH                                              ( 80 )
 

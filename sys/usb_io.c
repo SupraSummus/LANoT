@@ -116,13 +116,13 @@ static int usb_io_use_synchornous_mode(void * priv) {
 	int ret;
 
 	portENTER_CRITICAL();
-		if (!status->synchronous_mode) {
+		if (status->synchronous_mode) {
+			errno = EPERM;
+			ret = -1;
+		} else {
 			INFO("enabling synchronous mode on port %p", status);
 			status->synchronous_mode = true;
 			ret = 0;
-		} else {
-			errno = EPERM;
-			ret = -1;
 		}
 	portEXIT_CRITICAL();
 
@@ -154,6 +154,8 @@ static void usb_io_class_init(int i) {
 	APP_ERROR_CHECK(ret);
 
 	status->class = class;
+
+	status->synchronous_mode = false;
 
 	// register class under read and write fds
 	io_register_read_handler(read_classes[i], usb_io_read, (void*)i);

@@ -27,6 +27,7 @@ static bool handle_command(void) {
 		WARN("failed to read command code");
 		return false;
 	}
+
 	switch (code) {
 		case COMMAND_ECHO: {
 			write(OUTPUT_FD, &code, 1);
@@ -79,7 +80,7 @@ void interface_task_create(void) {
 		"ifce",
 		INTERFACE_STACK_DEPTH,
 		NULL,  // task parameter
-		1 | portPRIVILEGE_BIT,
+		SYSTEM_TASK_PRIORITY | portPRIVILEGE_BIT,
 		interface_stack,
 		&interface_task
 	);

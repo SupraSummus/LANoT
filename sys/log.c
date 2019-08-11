@@ -165,7 +165,7 @@ static void log_task_discard_main(void * p) {
 	}
 }
 
-static int log_use_synchronous_mode(void * p) {
+static int log_use_synchronous_mode_handler(void * p) {
 	(void)p;
 	int ret;
 
@@ -175,8 +175,11 @@ static int log_use_synchronous_mode(void * p) {
 			ret = -1;
 		} else {
 			INFO("enabling synchronous logging");
-			synchronous_operation = true;
+
+			// its crucial to enable synchronous mode for backend before disabling log buffer
 			io_use_synchronous_mode(LOG_BACKEND_FD);
+			synchronous_operation = true;
+
 			process_buffer();
 			ret = 0;
 		}
@@ -188,7 +191,7 @@ static int log_use_synchronous_mode(void * p) {
 void log_init (void) {
 	//synchronous_opration = true;
 	io_register_write_handler(STDERR_FILENO, log_write, NULL);
-	io_register_use_synchronous_mode_handler(STDERR_FILENO, log_use_synchronous_mode, NULL);
+	io_register_use_synchronous_mode_handler(STDERR_FILENO, log_use_synchronous_mode_handler, NULL);
 
 	INFO("initializing log on fd=%d with backend fd=%d", STDERR_FILENO, LOG_BACKEND_FD);
 
@@ -215,4 +218,8 @@ void log_init (void) {
 		&log_task_discard
 	);
 	assert(task != NULL);
+}
+
+void log_use_synchronous_mode (void) {
+	io_use_synchronous_mode(STDERR_FILENO);
 }

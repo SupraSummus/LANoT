@@ -14,7 +14,7 @@ ASSERT(
 	_Privileged_Functions_Region_Size == LENGTH(FLASH_MBR) + LENGTH(FLASH_SD) + LENGTH(FLASH_APP_SYS),
 	"error in privileged functions region size"
 )
-_Privileged_Data_Region_Size = 32k;
+_Privileged_Data_Region_Size = 64k;
 ASSERT(
 	_Privileged_Data_Region_Size == LENGTH(RAM_SD) + LENGTH(RAM_APP_SYS),
 	"error in privileged data region size"
