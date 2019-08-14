@@ -4,6 +4,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "flash.h"
+#include "io_helpers.h"
 #include "log.h"
 #include "user_task.h"
 
@@ -11,17 +13,24 @@
 #define OUTPUT_FD (STDOUT_FILENO)
 
 enum command_t {
+	// command replies
 	COMMAND_INVALID = '?',
 	COMMAND_OK = 'k',
+
+	// special case - reply to this command is COMMAND_ECHO
 	COMMAND_ECHO = '\n',
-	//COMMAND_FLASH_CHUNK_SIZE = 10,
-	//COMMAND_FLASH_READ = 11,
-	COMMAND_FLASH_WRITE = 'f',
+
+	COMMAND_FLASH_CHUNK_SIZE = 10,
+	COMMAND_FLASH_CHUNK_COUNT = 11,
+	COMMAND_FLASH_READ = 'r',
+	COMMAND_FLASH_WRITE = 'w',
 	COMMAND_KILL = 'k',
 	COMMAND_START = 's',
 };
 
 static bool handle_command(void) {
+	static uint8_t page_buffer[FLASH_PAGE_SIZE];
+
 	unsigned char code;
 	if (read(INPUT_FD, &code, 1) != 1) {
 		WARN("failed to read command code");
@@ -33,9 +42,56 @@ static bool handle_command(void) {
 			write(OUTPUT_FD, &code, 1);
 			return true;
 		}
-		case COMMAND_FLASH_WRITE: {
-			break;
+
+		/**
+		 * - receive uint32 page number
+		 * - read page from flash into RAM buffer
+		 * - write buffer to communication interface
+		 */
+		case COMMAND_FLASH_READ: {
+			uint32_t page_num;
+			if (!read_uint32(INPUT_FD, &page_num)) {
+				WARN("couldn't read page number");
+				write_uint8(OUTPUT_FD, COMMAND_INVALID);
+				return false;
+			}
+			if (!flash_read_user_page(page_num, page_buffer)) {
+				WARN("failed to access page %lu", page_num);
+				write_uint8(OUTPUT_FD, COMMAND_INVALID);
+				return false;
+			}
+			if (write_all(OUTPUT_FD, page_buffer, FLASH_PAGE_SIZE) != FLASH_PAGE_SIZE) {
+				WARN("failed to send page content");
+				write_uint8(OUTPUT_FD, COMMAND_INVALID);
+				return false;
+			}
 		}
+
+
+		/**
+		 * - receive uint32 page number
+		 * - read page from communication interface into RAM buffer
+		 * - write buffer to flash
+		 */
+		case COMMAND_FLASH_WRITE: {
+			uint32_t page_num;
+			if (!read_uint32(INPUT_FD, &page_num)) {
+				WARN("couldn't read page number");
+				write_uint8(OUTPUT_FD, COMMAND_INVALID);
+				return false;
+			}
+			if (read_all(INPUT_FD, page_buffer, FLASH_PAGE_SIZE) != FLASH_PAGE_SIZE) {
+				WARN("failed to receive page content");
+				write_uint8(OUTPUT_FD, COMMAND_INVALID);
+				return false;
+			}
+			if (!flash_write_user_page(page_num, page_buffer)) {
+				WARN("failed to write page %lu", page_num);
+				write_uint8(OUTPUT_FD, COMMAND_INVALID);
+				return false;
+			}
+		}
+
 		case COMMAND_KILL: {
 			user_task_kill();
 			break;
@@ -66,6 +122,7 @@ void interface_main(void * p) {
 
 	/* Kill ourselves. */
 	INFO("terminating");
+	close(OUTPUT_FD);
 	vTaskDelete( NULL );
 	(void)handle_command;
 }

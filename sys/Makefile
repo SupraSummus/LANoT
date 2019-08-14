@@ -32,9 +32,10 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
-  ./assert.c \
   ./abort.c \
+  ./assert.c \
   ./fault_handlers.c \
+  ./flash.c \
   ./freertos_and_newlib/retarget_locks_static.c \
   ./interface.c \
   ./io.c \
