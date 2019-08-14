@@ -23,7 +23,7 @@ Then you should be able to succesffuly run `make`.
 
 See also [the tutorial I was following](https://devzone.nordicsemi.com/nordic/nordic-blog/b/blog/posts/development-with-gcc-and-eclipse).
 
-Flashing
+Flashing using factory bootloader
 --------
 
 For flashing you'll need `nrfutil`. It's [available from pypi](https://pypi.org/project/nrfutil/) - but requires python2. If you have `pipenv` installed, you can simply
@@ -40,6 +40,11 @@ It's expecting device's usb-uart bootloader to be listening at `/dev/ttyACM0`.
 To enter bootlader mode on USB840x keep button pressed while powering the device up.
 
 Binaries are signed using Fanstel disclosed key.
+
+Flashing using stlink
+-------------------
+
+     openocd -s /usr/share/openocd/scripts -f interface/stlink-v2.cfg -f target/nrf52.cfg -c init ...
 
 Research level links
 --------------------
