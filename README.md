@@ -5,6 +5,8 @@ Axioms:
  * Programmer included, exposed as OS service and reachable via wireless communication. Any user error in programming procedure should not prevent system from booting to recoverable state.
  * Wireless communication (or any other) included as OS module. Any error in user code shouldnt prevent system from establishing wireless communication.
 
+ * We running on ARM Cortex-M4
+
 In one sentence: deployed hardware device is reprogrammable by user, in a safe way, without physical access.
 
 See also `usecase.pl.md` (currently only in polish).

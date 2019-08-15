@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "nrf52840.h"
 
 #include "log.h"

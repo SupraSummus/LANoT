@@ -34,6 +34,7 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
   ./abort.c \
   ./assert.c \
+  ./board/hooks.c \
   ./fault_handlers.c \
   ./flash.c \
   ./freertos_and_newlib/retarget_locks_static.c \

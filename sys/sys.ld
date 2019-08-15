@@ -5,18 +5,18 @@ GROUP(-lgcc -lc -lnosys)
 OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 ENTRY(Reset_Handler)
 
-INCLUDE common/memory.ld
+INCLUDE board/memory.ld
 
 /* ….define the variables required by FreeRTOS-MPU. First ensure the section sizes
 are a binary power of two to comply with the MPU region size rules. */
 _Privileged_Functions_Region_Size = 256K;
 ASSERT(
-	_Privileged_Functions_Region_Size == LENGTH(FLASH_MBR) + LENGTH(FLASH_SD) + LENGTH(FLASH_APP_SYS),
+	_Privileged_Functions_Region_Size == LENGTH(FLASH_MBR) + LENGTH(FLASH_SD) + LENGTH(FLASH_SYS),
 	"error in privileged functions region size"
 )
 _Privileged_Data_Region_Size = 64k;
 ASSERT(
-	_Privileged_Data_Region_Size == LENGTH(RAM_SD) + LENGTH(RAM_APP_SYS),
+	_Privileged_Data_Region_Size == LENGTH(RAM_SD) + LENGTH(RAM_SYS),
 	"error in privileged data region size"
 )
 
@@ -62,7 +62,7 @@ SECTIONS {
 		*(.rodata*)
 
 		KEEP(*(.eh_frame*))
-	} > FLASH_APP_SYS
+	} > FLASH_SYS
 
 	.text.nrf_stuff : {
 		PROVIDE(__start_sdh_soc_observers = .);
@@ -80,16 +80,16 @@ SECTIONS {
 		PROVIDE(__start_log_const_data = .);
 		KEEP(*(SORT(.log_const_data*)))
 		PROVIDE(__stop_log_const_data = .); */
-	} > FLASH_APP_SYS
+	} > FLASH_SYS
 
 	.ARM.extab : {
 		*(.ARM.extab* .gnu.linkonce.armextab.*)
-	} > FLASH_APP_SYS
+	} > FLASH_SYS
 
 	__exidx_start = .;
 	.ARM.exidx : {
 		*(.ARM.exidx* .gnu.linkonce.armexidx.*)
-	} > FLASH_APP_SYS
+	} > FLASH_SYS
 	__exidx_end = .;
 
 	__etext = .;
@@ -129,7 +129,7 @@ SECTIONS {
         /* All data end */
         __data_end__ = .;
 
-    } > RAM_APP_SYS
+    } > RAM_SYS
 
 	.bss : {
 		. = ALIGN(4);
@@ -138,7 +138,7 @@ SECTIONS {
 		*(COMMON)
 		. = ALIGN(4);
 		__bss_end__ = .;
-	} > RAM_APP_SYS
+	} > RAM_SYS
 
 	.heap (COPY): {
 		. = ALIGN(4);
@@ -148,7 +148,7 @@ SECTIONS {
         KEEP(*(.heap*))
         . = ALIGN(4);
         __HeapLimit = .;
-    } > RAM_APP_SYS
+    } > RAM_SYS
 
     /* .stack_dummy section doesn't contains any symbols. It is only
      * used for linker to calculate size of stack sections, and assign
@@ -156,23 +156,23 @@ SECTIONS {
     .stack_dummy (COPY):
     {
         KEEP(*(.stack*))
-    } > RAM_APP_SYS
+    } > RAM_SYS
 
     /* Set stack top to end of RAM, and stack limit move down by
      * size of stack_dummy section */
-    __StackTop = ORIGIN(RAM_APP_SYS) + LENGTH(RAM_APP_SYS);
+    __StackTop = ORIGIN(RAM_SYS) + LENGTH(RAM_SYS);
     __StackLimit = __StackTop - SIZEOF(.stack_dummy);
     PROVIDE(__stack = __StackTop);
 
     /* Check if data + heap + stack exceeds RAM limit */
-    ASSERT(__StackLimit >= __HeapLimit, "region RAM_APP_SYS overflowed with stack")
+    ASSERT(__StackLimit >= __HeapLimit, "region RAM_SYS overflowed with stack")
     
     /* Check if text sections + data exceeds FLASH limit */
     DataInitFlashUsed = __bss_start__ - __data_start__;
-    CodeFlashUsed = __etext - ORIGIN(FLASH_APP_SYS);
+    CodeFlashUsed = __etext - ORIGIN(FLASH_SYS);
     TotalFlashUsed = CodeFlashUsed + DataInitFlashUsed;
     ASSERT(
-		TotalFlashUsed <= LENGTH(FLASH_APP_SYS),
-		"region FLASH_APP_SYS overflowed with .data and user data"
+		TotalFlashUsed <= LENGTH(FLASH_SYS),
+		"region FLASH_SYS overflowed with .data and user data"
 	)
 }

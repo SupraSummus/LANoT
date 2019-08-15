@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include "nrf_sdm.h"
 #include "app_error.h"
 #include "nrf_drv_clock.h"
 
@@ -11,6 +10,7 @@
 #include "interface.h"
 #include "log.h"
 #include "usb_io.h"
+#include "hooks.h"
 
 //void * align_for_mpu(void * p, size_t size) {
 //    if (size == 0) return p;
@@ -25,15 +25,8 @@ int main(void) {
 	// enable logging
 	log_init();
 
-	// disable sd
-	sd_softdevice_disable();
-	INFO("SoftDevice disabled");
-
-	// set vtor point to our mem
-	// TODO deduplicate with memory.ld / linker script
-	SCB->VTOR = 0x00026000UL;
-	__DSB();
-	INFO("vector table relocated to %p", (void*)SCB->VTOR);
+	// do board-specific setup
+	board_startup_hook();
 
 	// enable clock needed by usbd
 	ret = nrf_drv_clock_init();
