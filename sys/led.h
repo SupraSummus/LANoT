@@ -2,7 +2,8 @@
 #define LED_H
 
 #include "nrf_gpio.h"
-#define LED_PIN (NRF_GPIO_PIN_MAP(0, 11))
+
+#include "board_config.h"
 
 static inline void led_on() {
 	nrf_gpio_cfg_output(LED_PIN);

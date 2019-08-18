@@ -5,21 +5,6 @@ GROUP(-lgcc -lc -lnosys)
 OUTPUT_FORMAT ("elf32-littlearm", "elf32-bigarm", "elf32-littlearm")
 ENTRY(Reset_Handler)
 
-INCLUDE board/memory.ld
-
-/* ….define the variables required by FreeRTOS-MPU. First ensure the section sizes
-are a binary power of two to comply with the MPU region size rules. */
-_Privileged_Functions_Region_Size = 256K;
-ASSERT(
-	_Privileged_Functions_Region_Size == LENGTH(FLASH_MBR) + LENGTH(FLASH_SD) + LENGTH(FLASH_SYS),
-	"error in privileged functions region size"
-)
-_Privileged_Data_Region_Size = 64k;
-ASSERT(
-	_Privileged_Data_Region_Size == LENGTH(RAM_SD) + LENGTH(RAM_SYS),
-	"error in privileged data region size"
-)
-
 /* Then define the variables themselves. */
 __FLASH_segment_start__ = ORIGIN( FLASH );
 __FLASH_segment_end__ = __FLASH_segment_start__ + LENGTH( FLASH );

@@ -2,11 +2,14 @@ PROJECT_NAME     := test
 TARGETS          := nrf52840_xxaa
 OUTPUT_DIRECTORY := _build
 
-SDK_ROOT := ./nRF5_SDK_15.3.0_59ac345
-FREERTOS_ROOT := ./FreeRTOSv10.2.1/FreeRTOS/Source
+mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(dir $(mkfile_path))
 
-$(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
-  LINKER_SCRIPT  := sys.ld
+SDK_ROOT := $(THIS_DIR)/nRF5_SDK_15.3.0_59ac345
+FREERTOS_ROOT := $(THIS_DIR)/FreeRTOSv10.2.1/FreeRTOS/Source
+
+#$(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
+#  LINKER_SCRIPT  := sys.ld
 
 # Source files common to all targets
 SRC_FILES += \
@@ -32,20 +35,19 @@ SRC_FILES += \
   $(SDK_ROOT)/modules/nrfx/mdk/gcc_startup_nrf52840.S \
   $(SDK_ROOT)/modules/nrfx/mdk/system_nrf52840.c \
   $(SDK_ROOT)/modules/nrfx/soc/nrfx_atomic.c \
-  ./abort.c \
-  ./assert.c \
-  ./board/hooks.c \
-  ./fault_handlers.c \
-  ./flash.c \
-  ./freertos_and_newlib/retarget_locks_static.c \
-  ./interface.c \
-  ./io.c \
-  ./log.c \
-  ./safer_freertos/portable/GCC/ARM_CM4_MPU/port.c \
-  ./safer_freertos/tasks.c \
-  ./sys.c \
-  ./usb_io.c \
-  ./user_task.c \
+  $(THIS_DIR)/abort.c \
+  $(THIS_DIR)/assert.c \
+  $(THIS_DIR)/fault_handlers.c \
+  $(THIS_DIR)/flash.c \
+  $(THIS_DIR)/freertos_and_newlib/retarget_locks_static.c \
+  $(THIS_DIR)/interface.c \
+  $(THIS_DIR)/io.c \
+  $(THIS_DIR)/log.c \
+  $(THIS_DIR)/safer_freertos/portable/GCC/ARM_CM4_MPU/port.c \
+  $(THIS_DIR)/safer_freertos/tasks.c \
+  $(THIS_DIR)/sys.c \
+  $(THIS_DIR)/usb_io.c \
+  $(THIS_DIR)/user_task.c \
 
 # Include folders common to all targets
 INC_FOLDERS += \
@@ -71,9 +73,9 @@ INC_FOLDERS += \
   $(SDK_ROOT)/modules/nrfx/drivers/include/ \
   $(SDK_ROOT)/modules/nrfx/hal \
   $(SDK_ROOT)/modules/nrfx/mdk \
-  ./ \
-  ./safer_freertos/include/ \
-  ./safer_freertos/portable/GCC/ARM_CM4_MPU/ \
+  $(THIS_DIR)/ \
+  $(THIS_DIR)/safer_freertos/include/ \
+  $(THIS_DIR)/safer_freertos/portable/GCC/ARM_CM4_MPU/ \
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -152,20 +154,7 @@ include $(TEMPLATE_PATH)/Makefile.common
 
 $(foreach target, $(TARGETS), $(call define_target, $(target)))
 
-.PHONY: flash flash_softdevice erase
-
-_build/pkg.zip: _build/nrf52840_xxaa.hex
-	nrfutil pkg generate --application $^ --hw-version 52 --sd-req 0xB6 --application-version 1 --key-file fanstel.pem $@
-
-# Flash the program
-flash: _build/pkg.zip
-	nrfutil dfu usb-serial --package $^ --port /dev/ttyACM0
-
-comm:
-	socat /dev/ttyACM0,raw,echo=0 -
-
-log:
-	socat /dev/ttyACM1,raw,echo=0 -
+.PHONY: flash_softdevice erase
 
 # Flash softdevice
 flash_softdevice:

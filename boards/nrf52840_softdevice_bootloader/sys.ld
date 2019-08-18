@@ -14,3 +14,19 @@ MEMORY {
 	RAM_SYS                   (rwx) : ORIGIN = 0x200022e0, LENGTH = 0xdd20
 	RAM_USER                  (rwx) : ORIGIN = 0x20010000, LENGTH = 192k
 }
+
+/* ….define the variables required by FreeRTOS-MPU. First ensure the section sizes
+are a binary power of two to comply with the MPU region size rules. */
+_Privileged_Functions_Region_Size = 256K;
+ASSERT(
+	_Privileged_Functions_Region_Size == LENGTH(FLASH_MBR) + LENGTH(FLASH_SD) + LENGTH(FLASH_SYS),
+	"error in privileged functions region size"
+)
+_Privileged_Data_Region_Size = 64k;
+ASSERT(
+	_Privileged_Data_Region_Size == LENGTH(RAM_SD) + LENGTH(RAM_SYS),
+	"error in privileged data region size"
+)
+
+/* TODO deduplicate with Makefile one day */
+INCLUDE ../../sys/sys.ld
