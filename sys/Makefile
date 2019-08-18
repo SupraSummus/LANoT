@@ -147,8 +147,14 @@ help:
 	@echo		sdk_config - starting external tool for editing sdk_config.h
 	@echo		flash      - flashing binary
 
-TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
+# dynamicaly generated version file
+VERSION_FILE := $(OUTPUT_DIRECTORY)/version.c
+.PHONY: $(VERSION_FILE)
+$(VERSION_FILE):
+	echo "const char version_string[] = \"$$(git describe --long --tags --dirty --always)\";" > $@
+SRC_FILES += $(VERSION_FILE)
 
+TEMPLATE_PATH := $(SDK_ROOT)/components/toolchain/gcc
 
 include $(TEMPLATE_PATH)/Makefile.common
 

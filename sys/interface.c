@@ -1,5 +1,6 @@
-#include <unistd.h>
 #include <stdbool.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -8,6 +9,7 @@
 #include "io_helpers.h"
 #include "log.h"
 #include "user_task.h"
+#include "version.h"
 
 #define INPUT_FD (STDIN_FILENO)
 #define OUTPUT_FD (STDOUT_FILENO)
@@ -26,6 +28,8 @@ enum command_t {
 	COMMAND_FLASH_WRITE = 'w',
 	COMMAND_KILL = 'k',
 	COMMAND_START = 's',
+
+	COMMAND_VERSION = 'v',
 };
 
 static bool handle_command(void) {
@@ -98,6 +102,12 @@ static bool handle_command(void) {
 		}
 		case COMMAND_START: {
 			user_task_start();
+			break;
+		}
+
+		case COMMAND_VERSION: {
+			write(OUTPUT_FD, version_string, strlen(version_string));
+			write(OUTPUT_FD, "\n", 1);
 			break;
 		}
 

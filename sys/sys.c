@@ -7,10 +7,11 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "hooks.h"
 #include "interface.h"
 #include "log.h"
 #include "usb_io.h"
-#include "hooks.h"
+#include "version.h"
 
 //void * align_for_mpu(void * p, size_t size) {
 //    if (size == 0) return p;
@@ -24,6 +25,7 @@ int main(void) {
 
 	// enable logging
 	log_init();
+	INFO("this is LANoT kernel, %s", version_string);
 
 	// do board-specific setup
 	board_startup_hook();
