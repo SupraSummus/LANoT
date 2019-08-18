@@ -3,6 +3,8 @@
 #include <unistd.h>
 
 #include "io.h"
+
+#define LOG_SUBSYSTEM "io"
 #include "log.h"
 
 struct io_endpoint_t {

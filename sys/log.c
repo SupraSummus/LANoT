@@ -8,8 +8,10 @@
 #include "task.h"
 
 #include "io.h"
-#include "log.h"
 #include "led.h"
+
+#define LOG_SUBSYSTEM "log"
+#include "log.h"
 
 #define buffer_size (1024)
 static char buffer[buffer_size];

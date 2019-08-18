@@ -9,8 +9,12 @@
 #define LOG_BACKEND_FD (3)
 #define LOG_TASK_PRIORITY (SYSTEM_TASK_PRIORITY)
 
-#define WARN(fmt, ...) (fprintf(stderr, "W " __FILE__ ": " fmt "\n", ##__VA_ARGS__))
-#define INFO(fmt, ...) (fprintf(stderr, "I " __FILE__ ": " fmt "\n", ##__VA_ARGS__))
+#ifndef LOG_SUBSYSTEM
+	#define LOG_SUBSYSTEM __FILE__
+#endif
+
+#define WARN(fmt, ...) (fprintf(stderr, "W " LOG_SUBSYSTEM ": " fmt "\n", ##__VA_ARGS__))
+#define INFO(fmt, ...) (fprintf(stderr, "I " LOG_SUBSYSTEM ": " fmt "\n", ##__VA_ARGS__))
 
 extern void log_init(void);
 extern void log_use_synchronous_mode(void);
