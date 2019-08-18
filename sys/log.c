@@ -191,7 +191,6 @@ static int log_use_synchronous_mode_handler(void * p) {
 }
 
 void log_init (void) {
-	//synchronous_opration = true;
 	io_register_write_handler(STDERR_FILENO, log_write, NULL);
 	io_register_use_synchronous_mode_handler(STDERR_FILENO, log_use_synchronous_mode_handler, NULL);
 

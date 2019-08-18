@@ -8,9 +8,6 @@ THIS_DIR := $(dir $(mkfile_path))
 SDK_ROOT := $(THIS_DIR)/nRF5_SDK_15.3.0_59ac345
 FREERTOS_ROOT := $(THIS_DIR)/FreeRTOSv10.2.1/FreeRTOS/Source
 
-#$(OUTPUT_DIRECTORY)/nrf52840_xxaa.out: \
-#  LINKER_SCRIPT  := sys.ld
-
 # Source files common to all targets
 SRC_FILES += \
   $(FREERTOS_ROOT)/event_groups.c \

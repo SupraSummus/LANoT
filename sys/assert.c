@@ -3,7 +3,6 @@
 #include <unistd.h>
 
 #include "io.h"
-#include "led.h"
 
 /**
  * it's like standard newlib's assert but first it swicthes IO drivers to synchronous mode
@@ -15,7 +14,6 @@ void __assert_func (
 	const char *func,
 	const char *failedexpr
 ) {
-	led_on();
 	io_use_synchronous_mode(STDERR_FILENO);
 	fprintf(stderr,
 		"assertion \"%s\" failed: file \"%s\", line %d%s%s\n",
