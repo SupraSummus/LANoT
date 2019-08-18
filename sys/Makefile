@@ -137,7 +137,8 @@ LIB_FILES += -lc -lnosys -lm
 .PHONY: default help
 
 # Default target - first one defined
-default: nrf52840_xxaa
+VERSION_FILE := $(OUTPUT_DIRECTORY)/version.c
+default: $(VERSION_FILE) nrf52840_xxaa
 
 # Print all targets that can be built
 help:
@@ -148,9 +149,9 @@ help:
 	@echo		flash      - flashing binary
 
 # dynamicaly generated version file
-VERSION_FILE := $(OUTPUT_DIRECTORY)/version.c
 .PHONY: $(VERSION_FILE)
 $(VERSION_FILE):
+	mkdir -p "$(OUTPUT_DIRECTORY)"
 	echo "const char version_string[] = \"$$(git describe --long --tags --dirty --always)\";" > $@
 SRC_FILES += $(VERSION_FILE)
 
