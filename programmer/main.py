@@ -22,6 +22,7 @@ class Interface:
         self.write_uint8(self.COMMAND_ECHO)
         self.expect_uint8(self.COMMAND_ECHO)
 
+    @property
     def page_size(self):
         self.write_uint8(self.COMMAND_PAGE_SIZE)
         return self.read_uint32()
@@ -29,6 +30,16 @@ class Interface:
     def page_count(self):
         self.write_uint8(self.COMMAND_PAGE_COUNT)
         return self.read_uint32()
+
+    def write_page(self, page_num, data):
+        if len(data) > self.page_size:
+            data = data[:256]
+        else:
+            data = data.ljust(256, b'\0')
+        raise NotImplementedError()
+
+    def read_page(self, page_num):
+        raise NotImplementedError()
 
     # ### write/read of dynamic size
 
@@ -64,8 +75,16 @@ if __name__ == "__main__":
         input_stream=open(10, 'rb'),
         output_stream=open(11, 'wb'),
     )
+
     i.do_echo()
     print('echo done')
-    print('page_size', i.page_size())
+
+    page_size = i.page_size
+    print('page_size', page_size)
+
     print('page_count', i.page_count())
-    
+
+    page_data = b'ala ma kota'
+    i.write_page(13, page_data)
+    read_data = i.read_page(13)
+    print(read_data)

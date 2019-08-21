@@ -100,13 +100,19 @@ SECTIONS {
         KEEP(*(.init_array))
         PROVIDE_HIDDEN (__init_array_end = .);
 
-
         . = ALIGN(4);
         /* finit data */
         PROVIDE_HIDDEN (__fini_array_start = .);
         KEEP(*(SORT(.fini_array.*)))
         KEEP(*(.fini_array))
         PROVIDE_HIDDEN (__fini_array_end = .);
+
+		. = ALIGN(4);
+		/* finit data */
+		PROVIDE_HIDDEN (__start_fs_data = .);
+		KEEP(*(SORT(.fs_data.*)))
+		KEEP(*(.fs_data))
+		PROVIDE_HIDDEN (__stop_fs_data = .);
 
         KEEP(*(.jcr*))
 

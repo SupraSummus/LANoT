@@ -13,9 +13,11 @@ SRC_FILES += \
   $(FREERTOS_ROOT)/event_groups.c \
   $(FREERTOS_ROOT)/list.c \
   $(FREERTOS_ROOT)/queue.c \
-  $(FREERTOS_ROOT)/timers.c \
   $(FREERTOS_ROOT)/stream_buffer.c \
+  $(FREERTOS_ROOT)/timers.c \
   $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
+  $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage.c \
+  $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage_nvmc.c \
   $(SDK_ROOT)/components/libraries/usbd/app_usbd.c \
   $(SDK_ROOT)/components/libraries/usbd/app_usbd_core.c \
   $(SDK_ROOT)/components/libraries/usbd/app_usbd_string_desc.c \
@@ -52,6 +54,7 @@ INC_FOLDERS += \
   $(SDK_ROOT)/components/libraries/atomic/ \
   $(SDK_ROOT)/components/libraries/delay \
   $(SDK_ROOT)/components/libraries/experimental_section_vars/ \
+  $(SDK_ROOT)/components/libraries/fstorage/ \
   $(SDK_ROOT)/components/libraries/log/ \
   $(SDK_ROOT)/components/libraries/log/src/ \
   $(SDK_ROOT)/components/libraries/strerror/ \
@@ -169,7 +172,7 @@ flash_softdevice:
 erase:
 	nrfjprog -f nrf52 --eraseall
 
-SDK_CONFIG_FILE := ./sdk_config.h
+SDK_CONFIG_FILE := $(THIS_DIR)/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
 sdk_config:
 	java -jar $(CMSIS_CONFIG_TOOL) $(SDK_CONFIG_FILE)
