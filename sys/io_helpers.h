@@ -39,4 +39,10 @@ static inline bool read_uint32(int fd, uint32_t * v) {
     return true;
 }
 
+static inline bool write_uint32(int fd, uint32_t v) {
+	//v = htonl(v);  // host to network order
+	if (write_all(fd, &v, sizeof(uint32_t)) != sizeof(uint32_t)) return false;
+	return true;
+}
+
 #endif

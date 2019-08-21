@@ -1,0 +1,12 @@
+#!/usr/bin/env pgspawn
+nodes:
+  - command: [python, main.py]
+    inputs:
+      10: serial_in
+    outputs:
+      11: serial_out
+  - command: [socat, "/dev/ttyACM0,raw,echo=0", -]
+    inputs:
+      0: serial_out
+    outputs:
+      1: serial_in

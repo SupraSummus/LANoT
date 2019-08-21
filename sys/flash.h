@@ -4,7 +4,10 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
+#include "user_task.h"
+
 #define FLASH_PAGE_SIZE (256)
+#define FLASH_PAGE_COUNT (user_flash_size / FLASH_PAGE_SIZE)
 
 extern void flash_init(void);
 

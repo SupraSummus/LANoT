@@ -7,9 +7,11 @@
 
 #include "flash.h"
 #include "io_helpers.h"
-#include "log.h"
 #include "user_task.h"
 #include "version.h"
+
+#define LOG_SUBSYSTEM "interface"
+#include "log.h"
 
 #define INPUT_FD (STDIN_FILENO)
 #define OUTPUT_FD (STDOUT_FILENO)
@@ -22,7 +24,7 @@ enum command_t {
 	// special case - reply to this command is COMMAND_ECHO
 	COMMAND_ECHO = '\n',
 
-	COMMAND_FLASH_CHUNK_SIZE = 10,
+	COMMAND_FLASH_CHUNK_SIZE = 12,
 	COMMAND_FLASH_CHUNK_COUNT = 11,
 	COMMAND_FLASH_READ = 'r',
 	COMMAND_FLASH_WRITE = 'w',
@@ -44,7 +46,7 @@ static bool handle_command(void) {
 	switch (code) {
 		case COMMAND_ECHO: {
 			write(OUTPUT_FD, &code, 1);
-			return true;
+			return true;  // special case - we dont send ACK as usual
 		}
 
 		/**
@@ -69,6 +71,7 @@ static bool handle_command(void) {
 				write_uint8(OUTPUT_FD, COMMAND_INVALID);
 				return false;
 			}
+			return true;
 		}
 
 
@@ -94,6 +97,25 @@ static bool handle_command(void) {
 				write_uint8(OUTPUT_FD, COMMAND_INVALID);
 				return false;
 			}
+			return true;
+		}
+
+		case COMMAND_FLASH_CHUNK_SIZE: {
+			if (!write_uint32(OUTPUT_FD, FLASH_PAGE_SIZE)) {
+				WARN("couldn't write page size");
+				write_uint8(OUTPUT_FD, COMMAND_INVALID);
+				return false;
+			}
+			return true;
+		}
+
+		case COMMAND_FLASH_CHUNK_COUNT: {
+			if (!write_uint32(OUTPUT_FD, FLASH_PAGE_COUNT)) {
+				WARN("couldn't write page count");
+				write_uint8(OUTPUT_FD, COMMAND_INVALID);
+				return false;
+			}
+			return true;
 		}
 
 		case COMMAND_KILL: {
