@@ -39,6 +39,7 @@ SRC_FILES += \
   $(THIS_DIR)/fault_handlers.c \
   $(THIS_DIR)/flash.c \
   $(THIS_DIR)/freertos_and_newlib/retarget_locks_static.c \
+  $(THIS_DIR)/freertos_and_newlib/heap.c \
   $(THIS_DIR)/interface.c \
   $(THIS_DIR)/io.c \
   $(THIS_DIR)/log.c \
@@ -79,6 +80,8 @@ INC_FOLDERS += \
 
 # Libraries common to all targets
 LIB_FILES += \
+
+include $(THIS_DIR)bt/Makefile
 
 # Optimization flags
 OPT = -O3 -g3

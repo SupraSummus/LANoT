@@ -1,3 +1,6 @@
 [submodule "sys/openocd"]
 	path = sys/openocd
 	url = https://github.com/ntfreak/openocd.git
+[submodule "sys/bt/mynewt-nimble"]
+	path = sys/bt/mynewt-nimble
+	url = https://github.com/apache/mynewt-nimble.git

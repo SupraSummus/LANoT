@@ -9,9 +9,12 @@
 
 #include "hooks.h"
 #include "interface.h"
-#include "log.h"
+#include "lanot/bt.h"
 #include "usb_io.h"
 #include "version.h"
+
+#define LOG_SUBSYSTEM "main"
+#include "log.h"
 
 //void * align_for_mpu(void * p, size_t size) {
 //    if (size == 0) return p;
@@ -29,6 +32,9 @@ int main(void) {
 
 	// do board-specific setup
 	board_startup_hook();
+
+	// start bt
+	lanot_bt_init();
 
 	// enable clock needed by usbd
 	ret = nrf_drv_clock_init();
@@ -103,4 +109,8 @@ static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
     Note that, as the array is necessarily of type StackType_t,
     configTIMER_TASK_STACK_DEPTH is specified in words, not bytes. */
     *pulTimerTaskStackSize = configTIMER_TASK_STACK_DEPTH;
+}
+
+void vApplicationMallocFailedHook (void) {
+	WARN("FreeRTOS malloc failed");
 }
