@@ -1,5 +1,5 @@
 THIS_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-PROJECT_ROOT := $(THIS_DIR)/../..
+LANOT_ROOT := $(THIS_DIR)/../..
 
 # ### compilation ###
 
@@ -9,7 +9,7 @@ SRC_FILES := $(THIS_DIR)/hooks.c
 
 LINKER_SCRIPT := $(THIS_DIR)/sys.ld
 
-include $(PROJECT_ROOT)/sys/Makefile
+include $(LANOT_ROOT)/sys/Makefile
 
 # ### flashing + USB communication ###
 

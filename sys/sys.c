@@ -9,7 +9,6 @@
 
 #include "hooks.h"
 #include "interface.h"
-#include "lanot/bt.h"
 #include "usb_io.h"
 #include "version.h"
 
@@ -32,9 +31,6 @@ int main(void) {
 
 	// do board-specific setup
 	board_startup_hook();
-
-	// start bt
-	lanot_bt_init();
 
 	// enable clock needed by usbd
 	ret = nrf_drv_clock_init();
