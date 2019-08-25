@@ -5,11 +5,12 @@ OUTPUT_DIRECTORY := _build
 mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(dir $(mkfile_path))
 
-SDK_ROOT := $(THIS_DIR)/nRF5_SDK_15.3.0_59ac345
-FREERTOS_ROOT := $(THIS_DIR)/FreeRTOSv10.2.1/FreeRTOS/Source
+SDK_ROOT := $(THIS_DIR)/nRF5_SDK_15.3.0_59ac345/
+NRF_SDK_ROOT := $(SDK_ROOT)
+FREERTOS_ROOT := $(THIS_DIR)/FreeRTOSv10.2.1/FreeRTOS/Source/
 
 # Source files common to all targets
-SRC_FILES += \
+SRC_FILES := $(SRC_FILES) \
   $(FREERTOS_ROOT)/event_groups.c \
   $(FREERTOS_ROOT)/list.c \
   $(FREERTOS_ROOT)/queue.c \
@@ -50,7 +51,7 @@ SRC_FILES += \
   $(THIS_DIR)/user_task.c \
 
 # Include folders common to all targets
-INC_FOLDERS += \
+INC_FOLDERS := $(INC_FOLDERS) \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/libraries/atomic/ \
   $(SDK_ROOT)/components/libraries/delay \
@@ -80,6 +81,11 @@ INC_FOLDERS += \
 
 # Libraries common to all targets
 LIB_FILES += \
+
+SDK_CONFIG_FILE := $(THIS_DIR)/sdk_config.h
+CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
+
+include $(THIS_DIR)modules/nrf_log_handler/Makefile
 
 # Optimization flags
 OPT = -O3 -g3
@@ -173,7 +179,5 @@ flash_softdevice:
 erase:
 	nrfjprog -f nrf52 --eraseall
 
-SDK_CONFIG_FILE := $(THIS_DIR)/sdk_config.h
-CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
 sdk_config:
 	java -jar $(CMSIS_CONFIG_TOOL) $(SDK_CONFIG_FILE)

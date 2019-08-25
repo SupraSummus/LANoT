@@ -6917,7 +6917,7 @@
 // <e> NRF_BALLOC_ENABLED - nrf_balloc - Block allocator module
 //==========================================================
 #ifndef NRF_BALLOC_ENABLED
-#define NRF_BALLOC_ENABLED 0
+#define NRF_BALLOC_ENABLED 1
 #endif
 // <e> NRF_BALLOC_CONFIG_DEBUG_ENABLED - Enables debug mode in the module.
 //==========================================================
@@ -7489,14 +7489,14 @@
  
 
 #ifndef NRF_FPRINTF_ENABLED
-#define NRF_FPRINTF_ENABLED 0
+#define NRF_FPRINTF_ENABLED 1
 #endif
 
 // <q> NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED  - For each printed LF, function will add CR.
  
 
 #ifndef NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED
-#define NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED 1
+#define NRF_FPRINTF_FLAG_AUTOMATIC_CR_ON_LF_ENABLED 0
 #endif
 
 // </h> 
@@ -7589,7 +7589,7 @@
 // <e> NRF_LOG_ENABLED - nrf_log - Logger
 //==========================================================
 #ifndef NRF_LOG_ENABLED
-#define NRF_LOG_ENABLED 0
+#define NRF_LOG_ENABLED 1
 #endif
 // <h> Log message pool - Configuration of log message pool
 
@@ -7661,7 +7661,7 @@
 // <4=> Debug 
 
 #ifndef NRF_LOG_DEFAULT_LEVEL
-#define NRF_LOG_DEFAULT_LEVEL 3
+#define NRF_LOG_DEFAULT_LEVEL 4
 #endif
 
 // <q> NRF_LOG_DEFERRED  - Enable deffered logger.
@@ -7670,7 +7670,7 @@
 // <i> Log data is buffered and can be processed in idle.
 
 #ifndef NRF_LOG_DEFERRED
-#define NRF_LOG_DEFERRED 1
+#define NRF_LOG_DEFERRED 0
 #endif
 
 // <q> NRF_LOG_FILTERS_ENABLED  - Enable dynamic filtering of logs.
@@ -9096,7 +9096,7 @@
 // <e> APP_USBD_CDC_ACM_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef APP_USBD_CDC_ACM_CONFIG_LOG_ENABLED
-#define APP_USBD_CDC_ACM_CONFIG_LOG_ENABLED 0
+#define APP_USBD_CDC_ACM_CONFIG_LOG_ENABLED 1
 #endif
 // <o> APP_USBD_CDC_ACM_CONFIG_LOG_LEVEL  - Default Severity level
  
@@ -9107,7 +9107,7 @@
 // <4=> Debug 
 
 #ifndef APP_USBD_CDC_ACM_CONFIG_LOG_LEVEL
-#define APP_USBD_CDC_ACM_CONFIG_LOG_LEVEL 3
+#define APP_USBD_CDC_ACM_CONFIG_LOG_LEVEL 2
 #endif
 
 // <o> APP_USBD_CDC_ACM_CONFIG_INFO_COLOR  - ANSI escape code prefix.
@@ -10090,7 +10090,7 @@
 // <e> NRF_SDH_BLE_LOG_ENABLED - Enable logging in SoftDevice handler (BLE) module.
 //==========================================================
 #ifndef NRF_SDH_BLE_LOG_ENABLED
-#define NRF_SDH_BLE_LOG_ENABLED 0
+#define NRF_SDH_BLE_LOG_ENABLED 1
 #endif
 // <o> NRF_SDH_BLE_LOG_LEVEL  - Default Severity level
  
@@ -10141,7 +10141,7 @@
 // <e> NRF_SDH_LOG_ENABLED - Enable logging in SoftDevice handler module.
 //==========================================================
 #ifndef NRF_SDH_LOG_ENABLED
-#define NRF_SDH_LOG_ENABLED 0
+#define NRF_SDH_LOG_ENABLED 1
 #endif
 // <o> NRF_SDH_LOG_LEVEL  - Default Severity level
  
@@ -10192,7 +10192,7 @@
 // <e> NRF_SDH_SOC_LOG_ENABLED - Enable logging in SoftDevice handler (SoC) module.
 //==========================================================
 #ifndef NRF_SDH_SOC_LOG_ENABLED
-#define NRF_SDH_SOC_LOG_ENABLED 0
+#define NRF_SDH_SOC_LOG_ENABLED 1
 #endif
 // <o> NRF_SDH_SOC_LOG_LEVEL  - Default Severity level
  

@@ -60,11 +60,11 @@ SECTIONS {
 
 		/* PROVIDE(__start_pwr_mgmt_data = .);
 		KEEP(*(SORT(.pwr_mgmt_data*)))
-		PROVIDE(__stop_pwr_mgmt_data = .);
+		PROVIDE(__stop_pwr_mgmt_data = .); */
 
 		PROVIDE(__start_log_const_data = .);
 		KEEP(*(SORT(.log_const_data*)))
-		PROVIDE(__stop_log_const_data = .); */
+		PROVIDE(__stop_log_const_data = .);
 	} > FLASH_SYS
 
 	.ARM.extab : {
@@ -107,12 +107,18 @@ SECTIONS {
         KEEP(*(.fini_array))
         PROVIDE_HIDDEN (__fini_array_end = .);
 
+		/* nrf fstorage (flash storage) */
 		. = ALIGN(4);
-		/* finit data */
 		PROVIDE_HIDDEN (__start_fs_data = .);
 		KEEP(*(SORT(.fs_data.*)))
 		KEEP(*(.fs_data))
 		PROVIDE_HIDDEN (__stop_fs_data = .);
+
+		/* nrf log */
+		. = ALIGN(4);
+		PROVIDE(__start_log_dynamic_data = .);
+		KEEP(*(SORT(.log_dynamic_data*)))
+		PROVIDE(__stop_log_dynamic_data = .);
 
         KEEP(*(.jcr*))
 

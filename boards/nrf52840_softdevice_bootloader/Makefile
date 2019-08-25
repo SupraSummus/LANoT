@@ -1,5 +1,5 @@
 THIS_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
-LANOT_ROOT := $(THIS_DIR)/../..
+LANOT_ROOT := $(THIS_DIR)/../../
 
 # ### compilation ###
 

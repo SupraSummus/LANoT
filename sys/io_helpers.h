@@ -1,6 +1,8 @@
 #ifndef IO_HELPERS_H
 #define IO_HELPERS_H
 
+#include <assert.h>
+
 static inline ssize_t read_all(int fd, void * buf, size_t buf_size) {
     size_t received = 0;
     while (buf_size > 0) {

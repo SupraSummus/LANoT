@@ -3,6 +3,8 @@
 
 #include "app_error.h"
 #include "nrf_drv_clock.h"
+#include "nrf_log_ctrl.h"
+#include "nrf_log.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -11,6 +13,7 @@
 #include "interface.h"
 #include "usb_io.h"
 #include "version.h"
+#include <lanot/nrf_log_handler.h>
 
 #define LOG_SUBSYSTEM "main"
 #include "log.h"
@@ -28,6 +31,8 @@ int main(void) {
 	// enable logging
 	log_init();
 	INFO("this is LANoT kernel, %s", version_string);
+
+	nrf_log_handler_init();
 
 	// do board-specific setup
 	board_startup_hook();
