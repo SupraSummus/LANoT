@@ -3,7 +3,7 @@ LANOT_ROOT := $(THIS_DIR)/../../
 
 # ### compilation ###
 
-INC_FOLDERS := $(THIS_DIR)
+INC_FOLDERS := $(INC_FOLDERS) $(THIS_DIR)
 
 SRC_FILES := $(THIS_DIR)/hooks.c
 

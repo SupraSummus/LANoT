@@ -103,3 +103,26 @@ void __retarget_lock_release_recursive(_LOCK_T lock)
 {
     xSemaphoreGiveRecursive((SemaphoreHandle_t)lock);
 }
+
+
+/* initializers and desctructros for dynamic locks */
+
+void
+__retarget_lock_init (_LOCK_T *lock)
+{
+}
+
+void
+__retarget_lock_init_recursive(_LOCK_T *lock)
+{
+}
+
+void
+__retarget_lock_close(_LOCK_T lock)
+{
+}
+
+void
+__retarget_lock_close_recursive(_LOCK_T lock)
+{
+}

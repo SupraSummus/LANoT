@@ -28,6 +28,8 @@
 int main(void) {
 	ret_code_t ret;
 
+	abort(); // just for testing
+
 	// enable logging
 	log_init();
 	INFO("this is LANoT kernel, %s", version_string);
