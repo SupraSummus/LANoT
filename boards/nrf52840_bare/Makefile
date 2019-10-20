@@ -26,3 +26,12 @@ flash: _build/nrf52840_xxaa.out
 		-f interface/stlink.cfg \
 		-f target/nrf52.cfg \
 		-c "program $^ verify reset exit"
+
+log:
+	$(OPENOCD) -s $(OPENOCD_SCRIPTS) \
+		-c "adapter_khz 1000" \
+		-f interface/stlink.cfg \
+		-f target/nrf52.cfg \
+		-c "init" \
+		-c "arm semihosting enable" \
+		-c "reset run" \

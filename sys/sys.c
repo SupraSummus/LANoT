@@ -25,16 +25,39 @@
 //    return (void *)((uint32_t)p + size - remainder);
 //}
 
+void send_command(int command, void *message) {
+	__asm volatile(
+		"mov r0, %[cmd];"
+		"mov r1, %[msg];"
+		"bkpt #0xAB"
+		:
+		: [cmd] "r" (command), [msg] "r" (message)
+		: "r0", "r1", "memory"
+	);
+}
+
 int main(void) {
 	ret_code_t ret;
 
-	abort(); // just for testing
+	while (1) {
+		// Create semihosting message
+		uint32_t message[] = {
+			2,  //stderr
+			(uint32_t)"hello\n",
+			6 //size of string
+		};
+
+		//Send semihosting command
+		send_command(0x05, message);
+	}
 
 	// enable logging
 	log_init();
 	INFO("this is LANoT kernel, %s", version_string);
 
 	nrf_log_handler_init();
+
+	abort(); // just for testing
 
 	// do board-specific setup
 	board_startup_hook();
