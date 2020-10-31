@@ -39,7 +39,7 @@ void send_command(int command, void *message) {
 int main(void) {
 	ret_code_t ret;
 
-	while (1) {
+	for (int i = 0; i < 3; i ++) {
 		// Create semihosting message
 		uint32_t message[] = {
 			2,  //stderr
@@ -57,7 +57,7 @@ int main(void) {
 
 	nrf_log_handler_init();
 
-	abort(); // just for testing
+	//abort(); // just for testing
 
 	// do board-specific setup
 	board_startup_hook();

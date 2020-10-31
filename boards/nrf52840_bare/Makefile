@@ -25,14 +25,14 @@ OPENOCD_SCRIPTS := $(LANOT_ROOT)sys/openocd/tcl/
 # flash using openocd/stlink
 flash: _build/nrf52840_xxaa.out
 	$(OPENOCD) -s $(OPENOCD_SCRIPTS) \
-		-c "adapter_khz 1000" \
+		-c "adapter speed 1000" \
 		-f interface/stlink.cfg \
 		-f target/nrf52.cfg \
 		-c "program $^ verify reset exit"
 
 log:
 	$(OPENOCD) -s $(OPENOCD_SCRIPTS) \
-		-c "adapter_khz 1000" \
+		-c "adapter speed 1000" \
 		-f interface/stlink.cfg \
 		-f target/nrf52.cfg \
 		-c "init" \
