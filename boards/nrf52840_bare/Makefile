@@ -16,6 +16,9 @@ include $(LANOT_ROOT)sys/Makefile
 
 OPENOCD := $(LANOT_ROOT)sys/openocd/src/openocd
 OPENOCD_SCRIPTS := $(LANOT_ROOT)sys/openocd/tcl/
+# If you have openocd newer than 0.10.0 installed system-wide.
+# OPENOCD := openocd
+# OPENOCD_SCRIPTS := /usr/share/openocd/scripts/
 
 .PHONY: flash
 
