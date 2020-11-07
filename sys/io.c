@@ -5,7 +5,7 @@
 #include "io.h"
 
 #define LOG_SUBSYSTEM "io"
-#include "log.h"
+#include <lanot/log.h>
 
 struct io_endpoint_t {
 	io_handler_t * read_handler;
@@ -18,7 +18,33 @@ struct io_endpoint_t {
 	void * use_synchronous_mode_handler_private_data;
 };
 
-static struct io_endpoint_t endpoints[IO_FD_COUNT];
+static int log_write_handler (void * buf, size_t len, void * p) {
+	(void)p;
+	return log_write(buf, len);
+}
+
+static int log_use_synchronous_mode_handler (void * p) {
+	(void)p;
+	int ret = 0;
+
+	if (log_use_synchronous_mode()) {
+		ret = 0;
+	} else {
+		errno = EPERM;
+		ret = -1;
+	}
+
+	return ret;
+}
+
+static struct io_endpoint_t endpoints[IO_FD_COUNT] = {
+	{},
+	{},
+	{
+		.write_handler = log_write_handler,
+		.use_synchronous_mode_handler = log_use_synchronous_mode_handler
+	}
+};
 
 inline static struct io_endpoint_t * get_endpoint(int fd) {
 	if (fd < 0 || fd >= IO_FD_COUNT) return NULL;  // fd out of range

@@ -9,7 +9,7 @@
 #include "io_helpers.h"
 
 #define LOG_SUBSYSTEM "nrf_log_handler"
-#include "log.h"
+#include <lanot/log.h>
 
 static const int LOGGING_FILENO = 2;
 

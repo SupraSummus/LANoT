@@ -6,7 +6,7 @@
 #include "user_task.h"
 
 #define LOG_SUBSYSTEM "user_task"
-#include "log.h"
+#include <lanot/log.h>
 
 static StaticTask_t user_task_static;
 static TaskParameters_t user_task_parameters = {

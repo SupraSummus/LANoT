@@ -2,7 +2,7 @@
 
 #include "nrf52840.h"
 
-#include "log.h"
+#include <lanot/log.h>
 
 enum {r0, r1, r2, r3, r12, lr, pc, psr};
 

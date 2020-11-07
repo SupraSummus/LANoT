@@ -11,7 +11,8 @@
 #include "event_groups.h"
 
 #include "io.h"
-#include "log.h"
+#define LOG_SUBSYSTEM "usb_io"
+#include <lanot/log.h>
 
 static void cdc_acm_user_ev_handler(
 	app_usbd_class_inst_t const * p_inst,
@@ -102,7 +103,7 @@ static const int write_classes[CLASSES_COUNT] = {
 };
 
 /**
- * now follows generic stuff 
+ * now follows generic stuff
  * =========================
  **/
 

@@ -16,7 +16,7 @@
 #include <lanot/nrf_log_handler.h>
 
 #define LOG_SUBSYSTEM "main"
-#include "log.h"
+#include <lanot/log.h>
 
 //void * align_for_mpu(void * p, size_t size) {
 //    if (size == 0) return p;
@@ -25,39 +25,15 @@
 //    return (void *)((uint32_t)p + size - remainder);
 //}
 
-void send_command(int command, void *message) {
-	__asm volatile(
-		"mov r0, %[cmd];"
-		"mov r1, %[msg];"
-		"bkpt #0xAB"
-		:
-		: [cmd] "r" (command), [msg] "r" (message)
-		: "r0", "r1", "memory"
-	);
-}
 
 int main(void) {
 	ret_code_t ret;
-
-	for (int i = 0; i < 3; i ++) {
-		// Create semihosting message
-		uint32_t message[] = {
-			2,  //stderr
-			(uint32_t)"hello\n",
-			6 //size of string
-		};
-
-		//Send semihosting command
-		send_command(0x05, message);
-	}
 
 	// enable logging
 	log_init();
 	INFO("this is LANoT kernel, %s", version_string);
 
 	nrf_log_handler_init();
-
-	//abort(); // just for testing
 
 	// do board-specific setup
 	board_startup_hook();

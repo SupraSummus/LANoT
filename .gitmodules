@@ -4,3 +4,6 @@
 [submodule "sys/bt/mynewt-nimble"]
 	path = sys/bt/mynewt-nimble
 	url = https://github.com/apache/mynewt-nimble.git
+[submodule "sys/freertos"]
+	path = sys/freertos
+	url = https://github.com/SupraSummus/FreeRTOS-Kernel.git

@@ -2,7 +2,7 @@
 #include "transport/ram/ble_hci_ram.h"
 
 #define LOG_SUBSYSTEM "bt"
-#include "log.h"
+#include "lanot/log.h"
 
 void lanot_bt_init() {
 	INFO("starting BT");

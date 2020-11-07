@@ -11,7 +11,8 @@
 #include "led.h"
 
 #define LOG_SUBSYSTEM "log"
-#include "log.h"
+#include "lanot/log.h"
+#include "lanot/log_backend.h"
 
 #define buffer_size (1024)
 static char buffer[buffer_size];
@@ -86,13 +87,13 @@ static void process_buffer(void) {
 				sprintf_buffer, sprintf_buffer_size,
 				"\n!!! dropped %d bytes !!!\n", local_dropped_bytes
 			);
-			write(LOG_BACKEND_FD, sprintf_buffer, min(len, sprintf_buffer_size));
+			log_backend_write(sprintf_buffer, min(len, sprintf_buffer_size));
 
 		} else {
 			taskEXIT_CRITICAL();
 
 			// write buffer contents
-			ssize_t r = write(LOG_BACKEND_FD, buffer_read_ptr, buffer_read_size);
+			ssize_t r = log_backend_write(buffer_read_ptr, buffer_read_size);
 			assert(r > 0);
 
 			taskENTER_CRITICAL();
@@ -102,12 +103,10 @@ static void process_buffer(void) {
 	}
 }
 
-static int log_write (void * buf, size_t len, void * priv) {
-	(void)priv;
-
+int log_write (void * buf, size_t len) {
 	// synchronous mode bypasses the buffer
 	if (synchronous_operation) {
-		return write(LOG_BACKEND_FD, buf, len);
+		return log_backend_write(buf, len);
 	}
 
 	taskENTER_CRITICAL();
@@ -145,8 +144,6 @@ static int log_write (void * buf, size_t len, void * priv) {
 #define LOG_TASK_STACK_DEPTH (128)
 static StackType_t log_task_stack[LOG_TASK_STACK_DEPTH];
 static StaticTask_t log_task;
-static StackType_t log_task_discard_stack[LOG_TASK_STACK_DEPTH];
-static StaticTask_t log_task_discard;
 
 static void log_task_main(void * p) {
 	(void)p;
@@ -157,44 +154,8 @@ static void log_task_main(void * p) {
 	}
 }
 
-static void log_task_discard_main(void * p) {
-	(void)p;
-	#define discard_buffer_size (16)
-	static char discard_buffer[discard_buffer_size];
-	while (true) {
-		int len = read(LOG_BACKEND_FD, discard_buffer, discard_buffer_size);
-		WARN("discarding %d bytes received on logging backend interface (fd %d)", len, LOG_BACKEND_FD);
-	}
-}
-
-static int log_use_synchronous_mode_handler(void * p) {
-	(void)p;
-	int ret;
-
-	portENTER_CRITICAL();
-		if (synchronous_operation) {
-			errno = EPERM;
-			ret = -1;
-		} else {
-			INFO("enabling synchronous logging");
-
-			// its crucial to enable synchronous mode for backend before disabling log buffer
-			io_use_synchronous_mode(LOG_BACKEND_FD);
-			synchronous_operation = true;
-
-			process_buffer();
-			ret = 0;
-		}
-	portEXIT_CRITICAL();
-
-	return ret;
-}
-
 void log_init (void) {
-	io_register_write_handler(STDERR_FILENO, log_write, NULL);
-	io_register_use_synchronous_mode_handler(STDERR_FILENO, log_use_synchronous_mode_handler, NULL);
-
-	INFO("initializing log on fd=%d with backend fd=%d", STDERR_FILENO, LOG_BACKEND_FD);
+	INFO("initializing log on fd=%d", STDERR_FILENO);
 
 	// task to consume buffer
 	log_task_handle = xTaskCreateStatic(
@@ -207,20 +168,25 @@ void log_init (void) {
 		&log_task
 	);
 	assert(log_task_handle != NULL);
-
-	// task to read data incoming on log backend interface
-	TaskHandle_t task = xTaskCreateStatic(
-		log_task_discard_main,
-		"log2",
-		LOG_TASK_STACK_DEPTH,
-		NULL,  // task parameter
-		LOG_TASK_PRIORITY | portPRIVILEGE_BIT,
-		log_task_discard_stack,
-		&log_task_discard
-	);
-	assert(task != NULL);
 }
 
-void log_use_synchronous_mode (void) {
-	io_use_synchronous_mode(STDERR_FILENO);
+bool log_use_synchronous_mode (void) {
+	bool ret;
+
+	portENTER_CRITICAL();
+		if (synchronous_operation) {
+			ret = false;
+		} else {
+			INFO("enabling synchronous logging");
+
+			// its crucial to enable synchronous mode for backend before disabling log buffer
+			log_backend_use_synchronous_mode();
+			synchronous_operation = true;
+
+			process_buffer();
+			ret = true;
+		}
+	portEXIT_CRITICAL();
+
+	return ret;
 }

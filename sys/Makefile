@@ -7,14 +7,16 @@ THIS_DIR := $(dir $(mkfile_path))
 
 SDK_ROOT := $(THIS_DIR)/nRF5_SDK_15.3.0_59ac345/
 NRF_SDK_ROOT := $(SDK_ROOT)
-FREERTOS_ROOT := $(THIS_DIR)/FreeRTOSv10.2.1/FreeRTOS/Source/
+FREERTOS_ROOT := $(THIS_DIR)/freertos/FreeRTOS/Source/
 
 # Source files common to all targets
 SRC_FILES := $(SRC_FILES) \
   $(FREERTOS_ROOT)/event_groups.c \
   $(FREERTOS_ROOT)/list.c \
+  $(FREERTOS_ROOT)/portable/GCC/ARM_CM4_MPU/port.c \
   $(FREERTOS_ROOT)/queue.c \
   $(FREERTOS_ROOT)/stream_buffer.c \
+  $(FREERTOS_ROOT)/tasks.c \
   $(FREERTOS_ROOT)/timers.c \
   $(SDK_ROOT)/components/libraries/atomic/nrf_atomic.c \
   $(SDK_ROOT)/components/libraries/fstorage/nrf_fstorage.c \
@@ -39,19 +41,17 @@ SRC_FILES := $(SRC_FILES) \
   $(THIS_DIR)/assert.c \
   $(THIS_DIR)/fault_handlers.c \
   $(THIS_DIR)/flash.c \
-  $(THIS_DIR)/freertos_and_newlib/retarget_locks_static.c \
-  $(THIS_DIR)/freertos_and_newlib/heap.c \
   $(THIS_DIR)/interface.c \
   $(THIS_DIR)/io.c \
   $(THIS_DIR)/log.c \
-  $(THIS_DIR)/safer_freertos/portable/GCC/ARM_CM4_MPU/port.c \
-  $(THIS_DIR)/safer_freertos/tasks.c \
   $(THIS_DIR)/sys.c \
   $(THIS_DIR)/usb_io.c \
   $(THIS_DIR)/user_task.c \
 
 # Include folders common to all targets
 INC_FOLDERS := $(INC_FOLDERS) \
+  $(FREERTOS_ROOT)/include/ \
+  $(FREERTOS_ROOT)/portable/GCC/ARM_CM4_MPU/ \
   $(SDK_ROOT)/components \
   $(SDK_ROOT)/components/libraries/atomic/ \
   $(SDK_ROOT)/components/libraries/delay \
@@ -75,9 +75,8 @@ INC_FOLDERS := $(INC_FOLDERS) \
   $(SDK_ROOT)/modules/nrfx/drivers/include/ \
   $(SDK_ROOT)/modules/nrfx/hal \
   $(SDK_ROOT)/modules/nrfx/mdk \
+  $(THIS_DIR)/include \
   $(THIS_DIR)/ \
-  $(THIS_DIR)/safer_freertos/include/ \
-  $(THIS_DIR)/safer_freertos/portable/GCC/ARM_CM4_MPU/ \
 
 # Libraries common to all targets
 LIB_FILES += \
@@ -85,7 +84,8 @@ LIB_FILES += \
 SDK_CONFIG_FILE := $(THIS_DIR)/sdk_config.h
 CMSIS_CONFIG_TOOL := $(SDK_ROOT)/external_tools/cmsisconfig/CMSIS_Configuration_Wizard.jar
 
-include $(THIS_DIR)modules/nrf_log_handler/Makefile
+include $(LANOT_ROOT)sys/modules/nrf_log_handler/Makefile
+include $(LANOT_ROOT)sys/modules/semihosting_log/module.mk
 
 # Optimization flags
 OPT = -O3 -g3
@@ -106,7 +106,6 @@ CFLAGS += -mfloat-abi=hard -mfpu=fpv4-sp-d16
 # keep every function in a separate section, this allows linker to discard unused ones
 CFLAGS += -ffunction-sections -fdata-sections -fno-strict-aliasing
 CFLAGS += -fno-builtin -fshort-enums
-CFLAGS += -D_RETARGETABLE_LOCKING
 
 # C++ flags common to all targets
 CXXFLAGS += $(OPT)

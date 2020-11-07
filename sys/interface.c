@@ -11,7 +11,7 @@
 #include "version.h"
 
 #define LOG_SUBSYSTEM "interface"
-#include "log.h"
+#include <lanot/log.h>
 
 #define INPUT_FD (STDIN_FILENO)
 #define OUTPUT_FD (STDOUT_FILENO)
