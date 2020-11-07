@@ -170,14 +170,16 @@ $(foreach target, $(TARGETS), $(call define_target, $(target)))
 
 .PHONY: flash_softdevice erase
 
-# Flash softdevice
-flash_softdevice:
-	@echo Flashing: s140_nrf52_6.1.1_softdevice.hex
-	nrfjprog -f nrf52 --program $(SDK_ROOT)/components/softdevice/s140/hex/s140_nrf52_6.1.1_softdevice.hex --sectorerase
-	nrfjprog -f nrf52 --reset
+OPENOCD := $(LANOT_ROOT)sys/openocd/src/openocd
+OPENOCD_SCRIPTS := $(LANOT_ROOT)sys/openocd/tcl/
 
-erase:
-	nrfjprog -f nrf52 --eraseall
+# flash softdevice using openocd/stlink
+flash_softdevice:
+	$(OPENOCD) -s $(OPENOCD_SCRIPTS) \
+		-c "adapter_khz 1000" \
+		-f interface/stlink.cfg \
+		-f target/nrf52.cfg \
+		-c "program $(SDK_ROOT)/components/softdevice/s140/hex/s140_nrf52_6.1.1_softdevice.hex verify reset exit"
 
 sdk_config:
 	java -jar $(CMSIS_CONFIG_TOOL) $(SDK_CONFIG_FILE)
