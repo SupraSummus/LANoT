@@ -1,9 +1,12 @@
 [submodule "sys/openocd"]
 	path = sys/openocd
 	url = https://github.com/ntfreak/openocd.git
-[submodule "sys/bt/mynewt-nimble"]
-	path = sys/bt/mynewt-nimble
+[submodule "sys/modules/bt/mynewt-nimble"]
+	path = sys/modules/bt/mynewt-nimble
 	url = https://github.com/apache/mynewt-nimble.git
 [submodule "sys/freertos"]
 	path = sys/freertos
 	url = https://github.com/SupraSummus/FreeRTOS-Kernel.git
+[submodule "os4cm4/CMSIS_5"]
+	path = os4cm4/CMSIS_5
+	url = git@github.com:ARM-software/CMSIS_5.git
