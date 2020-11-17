@@ -1,3 +1,4 @@
+#include <ARMCM4_FP.h>
 #include <assert.h>
 #include <os4cm4/thread.h>
 #include <stddef.h>
@@ -8,8 +9,9 @@
  * Thread ids are for use in userspace. In the kernel pointers are preffered.
  */
 
-#define MAX_THREADS (32)
-struct thread_t threads[MAX_THREADS];
+#define MAX_THREADS 32
+struct thread_t threads[MAX_THREADS] = {0};
+int test_int;
 
 struct thread_t * get_thread_by_id (uint32_t tid) {
         if (tid >= MAX_THREADS) return NULL;
@@ -30,7 +32,11 @@ struct thread_t * thread_new (
 ) {
         assert(tid < MAX_THREADS);
         struct thread_t * t = threads + tid;
-        assert(t->regs.sp != NULL);
+        printf("test int %d\n", test_int);
+        printf("threads table at %p\n", threads);
+        printf("%d\n", ((int *)threads)[0]);
+        printf("sp %p\n", threads[0].regs.sp);
+        assert(t->regs.sp == NULL);
         t->regs.sp = stack + stack_size - sizeof(struct exc_stack_t);
         t->regs.sp->pc = func;
         t->regs.lr = EXC_RETURN_THREAD_PSP;

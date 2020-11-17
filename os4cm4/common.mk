@@ -5,7 +5,7 @@ FLAGS :=
 CFLAGS := -Wall -Wextra
 LDFLAGS := -nostdlib
 
-BUILD_DIR := _build/
+BUILD_DIR := $(abspath _build)/
 
 FLAGS += -mcpu=cortex-m4
 FLAGS += -mthumb -mabi=aapcs
@@ -27,18 +27,28 @@ LDFLAGS += -Wl,--gc-sections
 OBJECTS := $(SOURCES)
 OBJECTS := $(addprefix $(BUILD_DIR),$(OBJECTS))
 OBJECTS := $(addsuffix .o,$(OBJECTS))
+OBJECTS := $(abspath $(OBJECTS))
 
-all: $(BUILD_DIR) $(BUILD_DIR)os4cm4
+OPENOCD_ROOT := $(OS4CM4_ROOT)../sys/openocd/
+OPENOCD := $(OPENOCD_ROOT)src/openocd
+OPENOCD_SCRIPTS := $(OPENOCD_ROOT)tcl/
+OPENOCD_FLAGS := \
+	-s $(OPENOCD_SCRIPTS) \
+	-c "adapter speed 1000" \
+	-f interface/stlink.cfg \
+	-f target/nrf52.cfg \
+
+all: $(BUILD_DIR)os4cm4
 
 $(BUILD_DIR)os4cm4: $(OBJECTS)
 	mkdir -p $(dir $@)
 	$(CC) $(FLAGS) $(LDFLAGS) -T $(LINKER_SCRIPT) -o $@ $^
 
-$(BUILD_DIR)%.c.o: %.c
+$(BUILD_DIR)%.c.o: /%.c
 	mkdir -p $(dir $@)
 	$(CC) $(FLAGS) $(CFLAGS) -c -o $@ $^
 
-$(BUILD_DIR)%.S.o: %.S
+$(BUILD_DIR)%.S.o: /%.S
 	mkdir -p $(dir $@)
 	$(CC) $(FLAGS) $(CFLAGS) -c -o $@ $^
 

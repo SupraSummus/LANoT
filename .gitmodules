@@ -10,3 +10,6 @@
 [submodule "os4cm4/CMSIS_5"]
 	path = os4cm4/CMSIS_5
 	url = git@github.com:ARM-software/CMSIS_5.git
+[submodule "os4cm4/nanoprintf"]
+	path = os4cm4/nanoprintf
+	url = https://github.com/charlesnicholson/nanoprintf.git

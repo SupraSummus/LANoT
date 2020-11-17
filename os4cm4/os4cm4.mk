@@ -7,14 +7,17 @@ INCLUDE_DIRS += \
 	$(CMSIS_ROOT)CMSIS/Core/Include/ \
 	$(CMSIS_ROOT)Device/ARM/ARMCM4/Include/ \
 	$(THIS_DIR)include/ \
+	$(THIS_DIR)nanoprintf/ \
 
 SOURCES += \
-	$(CMSIS_SOURCES)startup_ARMCM4.c \
+	$(CMSIS_SOURCES)GCC/startup_ARMCM4.S \
 	$(CMSIS_SOURCES)system_ARMCM4.c \
+	$(SRC_DIR)assert.c \
+	$(SRC_DIR)printf.c \
 	$(SRC_DIR)rendezvous.c \
+	$(SRC_DIR)shim.c \
 	$(SRC_DIR)switch.c \
-	$(SRC_DIR)thread.c \
 	$(SRC_DIR)thread.c \
 	$(SRC_DIR)user.c \
 
-LINKER_SCRIPT := $(CMSIS_ROOT)/Device/ARM/ARMCM4/Source/GCC/gcc_arm.ld
+LINKER_SCRIPT := $(CMSIS_SOURCES)GCC/gcc_arm.ld

@@ -36,7 +36,7 @@ struct thread_t {
 };
 
 extern struct thread_t * current_thread;
-extern struct thread_t threads[];
+extern struct thread_t threads[32];
 
 extern struct thread_t * get_thread_by_id (uint32_t tid);
 extern uint32_t get_thread_id (struct thread_t * t);
