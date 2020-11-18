@@ -13,7 +13,7 @@ SOURCES += \
 	$(CMSIS_SOURCES)GCC/startup_ARMCM4.S \
 	$(CMSIS_SOURCES)system_ARMCM4.c \
 	$(SRC_DIR)assert.c \
-	$(SRC_DIR)printf.c \
+	$(SRC_DIR)printk.c \
 	$(SRC_DIR)rendezvous.c \
 	$(SRC_DIR)shim.c \
 	$(SRC_DIR)switch.c \

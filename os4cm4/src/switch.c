@@ -11,7 +11,7 @@ void request_switch (struct thread_t * t) {
 }
 
 #define save() \
-        asm volatile (" \
+        __asm__ volatile (" \
                 .extern current_thread \n\
                 ldr r0, =current_thread \n\
                 mrs r1, psp \n\
@@ -23,7 +23,7 @@ void request_switch (struct thread_t * t) {
         ");
 
 #define restore() \
-        asm volatile (" \
+        __asm__ volatile (" \
                 .extern current_thread \n\
                 ldr r0, =current_thread \n\
                 ldm r0!, {r1, r4-r11, lr} \n\
@@ -43,5 +43,5 @@ void __attribute__((naked)) PendSV_Handler (void) {
         //next_thread->next_ready = 0;
         __enable_irq();
         restore();
-        asm volatile ("bx lr");
+        __asm__ volatile ("bx lr");
 }

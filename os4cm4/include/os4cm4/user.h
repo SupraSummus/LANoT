@@ -1,6 +1,9 @@
 #pragma once
+#include <stdint.h>
 
-#include <os4cm4/user/rendezvous.h>
+__attribute__((noreturn))
+extern void kill_me (void);
 
-extern void kill (int tid);
 extern void yield (void);
+
+extern uint32_t rendezvous (uint32_t tid, uint32_t out, uint32_t * in);

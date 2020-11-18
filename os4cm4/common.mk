@@ -2,8 +2,8 @@ CC := arm-none-eabi-gcc
 LD := arm-none-eabi-ld
 AS := arm-none-eabi-as
 FLAGS :=
-CFLAGS := -Wall -Wextra
-LDFLAGS := -nostdlib
+CFLAGS := -Wall -Wextra -std=c11
+LDFLAGS :=
 
 BUILD_DIR := $(abspath _build)/
 
