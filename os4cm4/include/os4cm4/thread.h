@@ -32,7 +32,7 @@ struct regs_t {
 struct thread_t {
         struct regs_t regs;
         struct thread_t * waiting_for;
-        //struct thread_t * next_ready;
+        struct thread_t * next_ready;
 };
 
 extern void kernel_start (void);
@@ -40,7 +40,7 @@ extern void kernel_start (void);
 extern struct thread_t * current_thread;
 extern struct thread_t * get_thread_by_id (uint32_t tid);
 extern uint32_t get_thread_id (struct thread_t * t);
-extern void request_switch (struct thread_t * t);
+extern void request_switch (void);
 extern struct thread_t * thread_new (
         uint32_t tid,
         void (* func) (uint32_t, uint32_t, uint32_t, uint32_t),
@@ -48,5 +48,7 @@ extern struct thread_t * thread_new (
         uint32_t stack_size,
         uint32_t r0, uint32_t r1, uint32_t r2, uint32_t r3
 );
+extern struct thread_t * pop_ready_thread (void);
+extern void execute_later (struct thread_t *);
 
 #endif

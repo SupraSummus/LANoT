@@ -28,8 +28,7 @@ int main (void) {
                         i, i * 7, 42, 0
                 );
         }
-
-        printk("before switch\n");
         kernel_start();
+
         printk("shouldn't reach here\n");
 }

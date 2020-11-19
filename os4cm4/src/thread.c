@@ -1,5 +1,6 @@
 #include <ARMCM4_FP.h>
 #include <assert.h>
+#include <os4cm4/printk.h>
 #include <os4cm4/thread.h>
 #include <stddef.h>
 #include <string.h>
@@ -13,9 +14,32 @@
 #define MAX_THREADS 32
 static struct thread_t threads[MAX_THREADS];
 
+#define BACKGROUND_PRIO (0xff)
+
 __attribute__((noreturn))
 void kernel_start (void) {
+        NVIC_SetPriorityGrouping(0);
+        NVIC_EnableIRQ(SVCall_IRQn);
+        NVIC_SetPriority(SVCall_IRQn, BACKGROUND_PRIO);
+        NVIC_EnableIRQ(PendSV_IRQn);
+        NVIC_SetPriority(PendSV_IRQn, BACKGROUND_PRIO);
+        NVIC_EnableIRQ(MemoryManagement_IRQn);
+        NVIC_SetPriority(MemoryManagement_IRQn, 0);
+        NVIC_EnableIRQ(BusFault_IRQn);
+        NVIC_SetPriority(BusFault_IRQn, 0);
+        NVIC_EnableIRQ(UsageFault_IRQn);
+        NVIC_SetPriority(UsageFault_IRQn, 0);
 
+        struct thread_t this_thread;
+        assert(current_thread == NULL);
+        current_thread = &this_thread;
+        printk("temporary start thread is %p\n", current_thread);
+        __DSB();
+
+        while (1) {
+                printk("kernel_start yield\n");
+                kill_me();
+        }
 }
 
 struct thread_t * get_thread_by_id (uint32_t tid) {
@@ -38,9 +62,12 @@ struct thread_t * thread_new (
 ) {
         assert(tid < MAX_THREADS);
         struct thread_t * t = threads + tid;
-        printk("threads %p, size %i\n", threads, sizeof(threads));
-        printk("sp %p\n", t->regs.sp);
         assert(t->regs.sp == NULL);
+        printk(
+                "thread_new %p, func %p, stack %p (size %#x), args %#x %#x %#x %#x\n",
+                t, func, stack, stack_size,
+                r0, r1, r2, r3
+        );
 
         memset(t, 0, sizeof(struct thread_t));
         t->regs.lr = EXC_RETURN_THREAD_PSP;
@@ -53,13 +80,15 @@ struct thread_t * thread_new (
         t->regs.sp->r2 = r2;
         t->regs.sp->r3 = r3;
 
+        execute_later(t);
+
         return t;
 }
 
 /**
  * Ready list
  */
-/*
+
 static struct thread_t * first_ready;
 static struct thread_t * last_ready;
 
@@ -82,4 +111,4 @@ struct thread_t * pop_ready_thread (void) {
         t->next_ready = NULL;
         if (first_ready == NULL) last_ready = NULL;
         return t;
-}*/
+}
