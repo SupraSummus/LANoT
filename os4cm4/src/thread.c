@@ -24,22 +24,17 @@ void kernel_start (void) {
         NVIC_EnableIRQ(PendSV_IRQn);
         NVIC_SetPriority(PendSV_IRQn, BACKGROUND_PRIO);
         NVIC_EnableIRQ(MemoryManagement_IRQn);
-        NVIC_SetPriority(MemoryManagement_IRQn, 0);
+        NVIC_SetPriority(MemoryManagement_IRQn, BACKGROUND_PRIO);
         NVIC_EnableIRQ(BusFault_IRQn);
-        NVIC_SetPriority(BusFault_IRQn, 0);
+        NVIC_SetPriority(BusFault_IRQn, BACKGROUND_PRIO);
         NVIC_EnableIRQ(UsageFault_IRQn);
-        NVIC_SetPriority(UsageFault_IRQn, 0);
+        NVIC_SetPriority(UsageFault_IRQn, BACKGROUND_PRIO);
 
         struct thread_t this_thread;
         assert(current_thread == NULL);
         current_thread = &this_thread;
         printk("temporary start thread is %p\n", current_thread);
-        __DSB();
-
-        while (1) {
-                printk("kernel_start yield\n");
-                kill_me();
-        }
+        kill_me();
 }
 
 struct thread_t * get_thread_by_id (uint32_t tid) {
@@ -79,6 +74,7 @@ struct thread_t * thread_new (
         t->regs.sp->r1 = r1;
         t->regs.sp->r2 = r2;
         t->regs.sp->r3 = r3;
+        t->regs.sp->xpsr = xPSR_T_Msk;
 
         execute_later(t);
 

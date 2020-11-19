@@ -2,12 +2,29 @@
 #include <ARMCM4_FP.h>
 
 void HardFault_Handler (void) {
+        printk("in HardFault_Handler\n");
         printk(
-                "in HardFault_Handler, flags:\n%s%s%s",
-                (SCB->HFSR & SCB_HFSR_FORCED_Msk) ? "\tHFSR.FORCED\n" : "",
-                (SCB->HFSR & SCB_HFSR_DEBUGEVT_Msk) ? "\tHFSR.DEBUGEVT\n" : "",
-                (SCB->HFSR & SCB_HFSR_VECTTBL_Msk) ? "\tHFSR.VECTTBL\n" : ""
+                "HFSR:\n%s%s%s",
+                (SCB->HFSR & SCB_HFSR_FORCED_Msk) ? "\tFORCED\n" : "",
+                (SCB->HFSR & SCB_HFSR_DEBUGEVT_Msk) ? "\tDEBUGEVT\n" : "",
+                (SCB->HFSR & SCB_HFSR_VECTTBL_Msk) ? "\tVECTTBL\n" : ""
         );
+        printk(
+                "CFSR.UFSR:\n%s%s%s%s%s%s",
+                (SCB->CFSR & SCB_CFSR_DIVBYZERO_Msk) ? "\tDIVBYZERO\n" : "",
+                (SCB->CFSR & SCB_CFSR_UNALIGNED_Msk) ? "\tUNALIGNED\n" : "",
+                (SCB->CFSR & SCB_CFSR_NOCP_Msk) ? "\tNOCP\n" : "",
+                (SCB->CFSR & SCB_CFSR_INVPC_Msk) ? "\tINVPC\n" : "",
+                (SCB->CFSR & SCB_CFSR_INVSTATE_Msk) ? "\tINVSTATE\n" : "",
+                (SCB->CFSR & SCB_CFSR_UNDEFINSTR_Msk) ? "\tUNDEFINSTR\n" : ""
+        );
+        /*printk(
+                "SHCSR.*PENDED:\n%s%s%s%s",
+                (SCB->SHCSR & SCB_SHCSR_SVCALLPENDED_Msk) ? "\tSVCALL\n" : "",
+                (SCB->SHCSR & SCB_SHCSR_BUSFAULTPENDED_Msk) ? "\tBUSFAULT\n" : "",
+                (SCB->SHCSR & SCB_SHCSR_MEMFAULTPENDED_Msk) ? "\tMEMFAULT\n" : "",
+                (SCB->SHCSR & SCB_SHCSR_USGFAULTPENDED_Msk) ? "\tUSGFAULT\n" : ""
+        );*/
         abort();
 }
 
