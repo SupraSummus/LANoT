@@ -27,3 +27,10 @@ ssize_t log_backend_write (const char * buf, size_t len) {
 void log_backend_use_synchronous_mode (void) {
 	log_backend_write("lb sync\n", 8);
 }
+
+void semihosting_end (void) {
+	uint32_t message[] = {
+		0  // exit code
+	};
+	send_command(60, message);
+}

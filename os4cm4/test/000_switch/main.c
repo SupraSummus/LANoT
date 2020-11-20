@@ -30,8 +30,10 @@ int main (void) {
 
         kernel_start(tasks_count, kernel_stack, stack_size);
 
-        while (1) {
+        for (int i = 0; i < 10; i ++) {
                 printk("main task yield\n");
                 yield();
         }
+
+        semihosting_end();
 }
