@@ -1,5 +1,6 @@
 #include <ARMCM4_FP.h>
 #include <os4cm4/thread.h>
+#include <os4cm4/printk.h>
 #include <stddef.h>
 
 struct thread_t * current_thread;
@@ -39,12 +40,9 @@ void request_switch (void) {
 void __attribute__((naked)) PendSV_Handler (void) {
         save();
         __disable_irq();
-        printk("switching threads: %p", current_thread);
-        //hex_dump("old thread", current_thread, sizeof(struct thread_t));
+        debug_printk("switching threads: %p", current_thread);
         current_thread = pop_ready_thread();
-        printk(" to %p\n", current_thread);
-        //hex_dump("new thread", current_thread, sizeof(struct thread_t));
-        //hex_dump("new thread stack", current_thread->regs.sp, sizeof(struct exc_stack_t));
+        debug_printk(" to %p\n", current_thread);
         __enable_irq();
         restore();
         __asm__ volatile ("bx lr");

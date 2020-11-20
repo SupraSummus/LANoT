@@ -16,8 +16,26 @@ static struct thread_t threads[MAX_THREADS];
 
 #define BACKGROUND_PRIO (0xff)
 
-__attribute__((noreturn))
-void kernel_start (void) {
+struct thread_t * kernel_start (
+        uint32_t tid,  // tid for current thread
+        void * kernel_stack, uint32_t kernel_stack_size
+) {
+        assert(current_thread == NULL);
+        assert(tid < MAX_THREADS);
+        assert(threads[tid].regs.sp == NULL);
+        current_thread = threads + tid;
+        current_thread->regs.sp = (void *)-1;  // something to indicate it's not a free slot
+
+        if (!(__get_CONTROL() & CONTROL_SPSEL_Msk)) {
+                // using Main SP? switch to Process SP
+                __set_PSP(__get_MSP());
+                __set_CONTROL(__get_CONTROL() | CONTROL_SPSEL_Msk);
+        }
+
+        debug_printk("kernel stack at %p, size %#x\n", kernel_stack, kernel_stack_size);
+        __set_MSP((uint32_t)kernel_stack + kernel_stack_size);
+
+        debug_printk("enabling kernel IRQs\n");
         NVIC_SetPriorityGrouping(0);
         NVIC_EnableIRQ(SVCall_IRQn);
         NVIC_SetPriority(SVCall_IRQn, BACKGROUND_PRIO);
@@ -30,11 +48,7 @@ void kernel_start (void) {
         NVIC_EnableIRQ(UsageFault_IRQn);
         NVIC_SetPriority(UsageFault_IRQn, BACKGROUND_PRIO);
 
-        struct thread_t this_thread;
-        assert(current_thread == NULL);
-        current_thread = &this_thread;
-        printk("temporary start thread is %p\n", current_thread);
-        kill_me();
+        return current_thread;
 }
 
 struct thread_t * get_thread_by_id (uint32_t tid) {
@@ -58,7 +72,7 @@ struct thread_t * thread_new (
         assert(tid < MAX_THREADS);
         struct thread_t * t = threads + tid;
         assert(t->regs.sp == NULL);
-        printk(
+        debug_printk(
                 "thread_new %p, func %p, stack %p (size %#x), args %#x %#x %#x %#x\n",
                 t, func, stack, stack_size,
                 r0, r1, r2, r3

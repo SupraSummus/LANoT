@@ -35,7 +35,10 @@ struct thread_t {
         struct thread_t * next_ready;
 };
 
-extern void kernel_start (void);
+extern struct thread_t * kernel_start (
+        uint32_t tid,
+        void * kernel_stack, uint32_t kernel_stack_size
+);
 
 extern struct thread_t * current_thread;
 extern struct thread_t * get_thread_by_id (uint32_t tid);

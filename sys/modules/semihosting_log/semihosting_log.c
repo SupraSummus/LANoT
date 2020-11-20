@@ -13,7 +13,7 @@ static void send_command (int command, void * message) {
 
 ssize_t log_backend_write (const char * buf, size_t len) {
         uint32_t message[] = {
-                2,  //stderr
+                1,  //stdout
                 (uint32_t)buf,
                 len //size of string
         };

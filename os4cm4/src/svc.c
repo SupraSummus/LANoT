@@ -1,22 +1,22 @@
 #include <os4cm4/svc.h>
 #include <os4cm4/thread.h>
+#include <os4cm4/printk.h>
 #include <stddef.h>
 #include <ARMCM4_FP.h>
 
-static void do_yield (void) {
-        printk("do_yield\n");
+inline static void do_yield (void) {
         execute_later(current_thread);
         request_switch();
 }
 
-static void do_kill_me (void) {
+inline static void do_kill_me (void) {
         // TODO mark thread slot as free.
         // setting pc = NULL is not enough as it will get overwritten during final context switch.
         //current_thread->regs.sp = NULL;
         request_switch();
 }
 
-static void do_rendezvous (void) {
+inline static void do_rendezvous (void) {
         uint32_t target_thread_id = current_thread->regs.sp->r0;
         struct thread_t * target_thread = get_thread_by_id(target_thread_id);
 
@@ -57,7 +57,7 @@ static void do_rendezvous (void) {
 
 void SVC_Handler (uint32_t r0, uint32_t r1, uint32_t r2, uint32_t r3) {
         struct exc_stack_t * caller_stack = __get_PSP();
-        printk("handling SVC %#x %#x %#x %#x, stack %p\n", r0, r1, r2, r3, caller_stack);
+        debug_printk("handling SVC %#x %#x %#x %#x, stack %p\n", r0, r1, r2, r3, caller_stack);
         switch (r0) {
                 case SVC_YIELD:
                         do_yield();
@@ -72,5 +72,5 @@ void SVC_Handler (uint32_t r0, uint32_t r1, uint32_t r2, uint32_t r3) {
                         caller_stack->r0 = -1;
                         break;
         }
-        printk("handling SVC end\n");
+        debug_printk("handling SVC end\n");
 }
