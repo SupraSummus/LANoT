@@ -1,62 +1,41 @@
 #include <ARMCM4_FP.h>
-#include <os4cm4/user/rendezvous.h>
+#include <os4cm4/user.h>
 #include <os4cm4/thread.h>
 
 #define stack_size (1024)
+#define task_count (2)
 
-static uint8_t task_1_stack[stack_size] __attribute__ ((aligned (stack_size)));
-void task_1 (void) {
-        for (int i = 0; i < 5; i ++) {
+static uint8_t task_stacks[stack_size * task_count] __attribute__ ((aligned (stack_size)));
+static uint8_t kernel_stack[stack_size] __attribute__ ((aligned (stack_size)));
+
+void task (uint32_t other_tid, uint32_t rendezvous_count, uint32_t base_value, uint32_t r3) {
+        for (int i = 0; i < rendezvous_count; i ++) {
                 int r;
-                int from = rendezvous(2, 10 + i, &r);
-                log_backend_write("1 recv\n", 7);
+                int from = rendezvous(other_tid, base_value + i, &r);
+                printk("received %d from %d\n", r, from);
         }
-        rendezvous0(TID_KILLER, 1);
+        kill_me();
 }
 
-static uint8_t task_2_stack[stack_size] __attribute__ ((aligned (stack_size)));;
-void task_2 (void) {
-        for (int i = 0; i < 7; i ++) {
-                int r;
-                int ok = rendezvous(2, 20 + i, &r);
-                log_backend_write("2 recv\n", 7);
-                //print("2 recv", hex(r), "from", hex(ok));
-        }
-        rendezvous0(TID_KILLER, 2);
-}
-
-/*
-static uint8_t task_3_stack[stack_size];
-void task_3 (void) {
-
-}
-
-static uint8_t task_4_stack[stack_size];
-void task_4 (void) {
-
-}*/
-
-void _start (void) {
-        log_backend_write("_start\n", 7);
-        current_thread = threads + 0;
-        struct thread_t * t = thread_new(
+int main (void) {
+        thread_new(
                 1,
-                task_1,
-                task_1_stack,
-                stack_size
+                task,
+                task_stacks, stack_size,
+                2, 2, 234, 0
         );
         thread_new(
                 2,
-                task_2,
-                task_2_stack,
-                stack_size
+                task,
+                task_stacks + stack_size, stack_size,
+                1, 4, 33, 0
         );
-        log_backend_write("before switch\n", 14);
-        request_switch(t);
-        while (1);
-}
+        kernel_start(0, kernel_stack, stack_size);
 
-void __assert_func () {
-        log_backend_write("assert failed\n", 14);
-        while (1);
+        for (int i = 0; i < 5; i ++) {
+                printk("main task yield\n");
+                yield();
+        }
+
+        semihosting_end();
 }

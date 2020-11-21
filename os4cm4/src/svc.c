@@ -16,13 +16,12 @@ inline static void do_kill_me (void) {
         request_switch();
 }
 
-inline static void do_rendezvous (void) {
-        uint32_t target_thread_id = current_thread->regs.sp->r0;
-        struct thread_t * target_thread = get_thread_by_id(target_thread_id);
+inline static void do_rendezvous (uint32_t target_tid, uint32_t v, struct exc_stack_t * caller_stack) {
+        struct thread_t * target_thread = get_thread_by_id(target_tid);
 
         if (target_thread == NULL || target_thread == current_thread) {
                 // Tried to rendezvous with non-existent thread or self.
-                current_thread->regs.sp->r0 = -1;
+                caller_stack->r1 = -1;
                 // It may be a userland malfunction.
                 // Minimize damage (time lost) by switching to someone else.
                 //execute_later(current_thread);
@@ -31,9 +30,8 @@ inline static void do_rendezvous (void) {
         } else if (target_thread->waiting_for == current_thread) {
                 // Target thread is waiting for us.
                 // Do the rendezvous.
-                uint32_t tmp = target_thread->regs.sp->r1;
-                target_thread->regs.sp->r1 = current_thread->regs.sp->r1;
-                current_thread->regs.sp->r1 = tmp;
+                caller_stack->r2 = target_thread->regs.sp->r2;
+                target_thread->regs.sp->r2 = v;
                 target_thread->waiting_for = NULL;
                 current_thread->waiting_for = NULL;
                 execute_later(target_thread);
@@ -48,8 +46,8 @@ inline static void do_rendezvous (void) {
                 // Break their waiting and tell them we were calling.
                 current_thread->waiting_for = target_thread;
                 target_thread->waiting_for = NULL;
-                target_thread->regs.sp->r0 = get_thread_id(current_thread);
-                target_thread->regs.sp->r1 = current_thread->regs.sp->r1;
+                target_thread->regs.sp->r1 = get_thread_id(current_thread);
+                target_thread->regs.sp->r2 = v;
                 execute_later(target_thread);
                 request_switch();
         }
@@ -66,7 +64,7 @@ void SVC_Handler (uint32_t r0, uint32_t r1, uint32_t r2, uint32_t r3) {
                         do_kill_me();
                         break;
                 case SVC_RENDEZVOUS:
-                        do_rendezvous();
+                        do_rendezvous(r1, r2, caller_stack);
                         break;
                 default:
                         caller_stack->r0 = -1;
