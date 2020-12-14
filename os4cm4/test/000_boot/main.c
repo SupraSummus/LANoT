@@ -57,19 +57,19 @@ int main (void) {
 
         mem_remove(
                 root_thread_caps, root_thread_caps + 16,
-                &kernel, KERNEL_MEM_SIZE_SHIFT
+                &kernel, sizeof(kernel)
         );
         mem_remove(
                 root_thread_caps, root_thread_caps + 16,
-                &root_thread, THREAD_SIZE_SHIFT
+                &root_thread, sizeof(root_thread)
         );
         mem_remove(
                 root_thread_caps, root_thread_caps + 16,
-                root_thread_caps, CAP_SIZE_SHIFT + 4
+                root_thread_caps, sizeof(root_thread_caps)
         );
         mem_remove(
                 root_thread_caps, root_thread_caps + 16,
-                printk_buffer, PRINTK_BUFFER_SIZE_SHIFT
+                printk_buffer, sizeof(printk_buffer)
         );
 
         kernel_start(&root_thread);

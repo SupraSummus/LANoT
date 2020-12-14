@@ -1,5 +1,6 @@
-#include <os4cm4/printk.h>
 #include <ARMCM4_FP.h>
+#include <os4cm4/printk.h>
+#include <stdlib.h>
 
 void HardFault_Handler (void) {
         printk("in HardFault_Handler\n");

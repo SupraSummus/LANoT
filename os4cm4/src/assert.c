@@ -1,6 +1,7 @@
 #include <os4cm4/printk.h>
 
 void abort (void) {
+        debug_printk("in abort\n");
         while (1);
 }
 
