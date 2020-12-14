@@ -1,7 +1,11 @@
 #ifndef OS4CM4_THREAD_H
 #define OS4CM4_THREAD_H
 
+#include <os4cm4/cap.h>
 #include <stdint.h>
+
+#define THREAD_SIZE_SHIFT (7)
+#define THREAD_SIZE (1 << THREAD_SIZE_SHIFT)
 
 struct exc_stack_t {
         uint32_t r0;
@@ -30,28 +34,33 @@ struct regs_t {
 };
 
 struct thread_t {
+        // processor state, for context switching
+        // 26 words * 4B = 104B
         struct regs_t regs;
+
         struct thread_t * waiting_for;
         struct thread_t * next_ready;
+
+        // size 104B + 4B + 4B = 112B
+
+        // capability root for this thread
+        // It has to be 16B aligned. It is: 16B * 7 = 112B.
+        struct cap_t cap;
+
+        // size 128B
 };
 
-extern struct thread_t * kernel_start (
-        uint32_t tid,
-        void * kernel_stack, uint32_t kernel_stack_size
-);
+_Static_assert(sizeof(struct thread_t) == THREAD_SIZE);
 
-extern struct thread_t * current_thread;
 extern struct thread_t * get_thread_by_id (uint32_t tid);
 extern uint32_t get_thread_id (struct thread_t * t);
 extern void request_switch (void);
 extern struct thread_t * thread_new (
-        uint32_t tid,
+        struct thread_t *,
         void (* func) (uint32_t, uint32_t, uint32_t, uint32_t),
         void * stack,
         uint32_t stack_size,
         uint32_t r0, uint32_t r1, uint32_t r2, uint32_t r3
 );
-extern struct thread_t * pop_ready_thread (void);
-extern void execute_later (struct thread_t *);
 
 #endif

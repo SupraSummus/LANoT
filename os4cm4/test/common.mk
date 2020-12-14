@@ -21,3 +21,12 @@ hard: $(BUILD_DIR)os4cm4
 		-c "reset run" \
 		-c "wait_halt" \
 		-c "exit")
+
+run: SHELL := bash
+run: $(BUILD_DIR)os4cm4
+	$(OPENOCD) $(OPENOCD_FLAGS) \
+		-c "program $^ verify" \
+		-c "arm semihosting enable" \
+		-c "reset run" \
+		-c "wait_halt" \
+		-c "exit"

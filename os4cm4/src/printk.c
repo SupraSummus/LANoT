@@ -10,16 +10,13 @@
 #define NANOPRINTF_USE_WRITEBACK_FORMAT_SPECIFIERS 0
 #include <nanoprintf.h>
 
-#define printk_buffer_size (1024)
-static char printk_buffer[printk_buffer_size];
-
 int printk (const char * format, ...) {
         va_list args;
         va_start(args, format);
-        int len = npf_vsnprintf(printk_buffer, printk_buffer_size, format, args);
+        int len = npf_vsnprintf(printk_buffer, PRINTK_BUFFER_SIZE, format, args);
         va_end(args);
-        if (len > printk_buffer_size) {
-                log_backend_write(printk_buffer, printk_buffer_size);
+        if (len > PRINTK_BUFFER_SIZE) {
+                log_backend_write(printk_buffer, PRINTK_BUFFER_SIZE);
                 log_backend_write("printk buffer overrun\n", 22);
         } else {
                 log_backend_write(printk_buffer, len);
