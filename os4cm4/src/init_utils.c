@@ -1,7 +1,8 @@
-#include <stdbool.h>
-#include <os4cm4/cap.h>
-#include <stddef.h>
 #include <assert.h>
+#include <os4cm4/cap.h>
+#include <os4cm4/init.h>
+#include <stdbool.h>
+#include <stddef.h>
 
 void * max_ptr(void * a, void * b) {
         if (a > b) return a;
@@ -95,5 +96,40 @@ void mem_remove(
                 } else {
                         assert(false);
                 }
+        }
+}
+
+
+unsigned int get_alignment (uint32_t v) {
+        for (unsigned int i = 32; i > 0; i --) {
+                if (v << (32 - i) == 0) return i;
+        }
+        return 0;
+}
+
+
+struct cap_t * mem_add (
+        struct cap_t * caps, struct cap_t const* caps_past_end,
+        void const* ptr, void const* ptr_past_end,
+        unsigned int perms
+) {
+        unsigned int alignment = get_alignment((uint32_t)ptr);
+        while (alignment < MEM_MIN_SIZE_SHIFT) {
+                debug_printk("mem_add: aligning %p by size shift %d\n", ptr, alignment);
+                ptr += 1 << alignment;
+                alignment ++;
+        }
+
+        while (true) {
+                assert(caps < caps_past_end);
+                alignment = get_alignment((uint32_t)ptr);
+                while (ptr + (1 << alignment) >= ptr_past_end) {
+                        if (alignment <= MEM_MIN_SIZE_SHIFT) return caps;
+                        alignment --;
+                }
+                debug_printk("mem_add: adding %p, size shift %d\n", ptr, alignment);
+                cap_set_mem(caps, ptr, alignment, perms);
+                caps ++;
+                ptr += 1 << alignment;
         }
 }

@@ -40,7 +40,7 @@ void cap_clear (struct cap_t * cap) {
 void cap_set (
         struct cap_t * cap,
         unsigned int type,
-        void * object_data,
+        void const* object_data,
         unsigned int size_shift
 ) {
         assert(cap_is_sane(cap));
@@ -70,9 +70,10 @@ void cap_set_thread (
 
 void cap_set_mem (
         struct cap_t * cap,
-        void * ptr,
+        void const* ptr,
         unsigned int size_shift,
         unsigned int perms
 ) {
+        (void)perms;  // TODO save them
         cap_set(cap, CAP_TYPE_MEM, ptr, size_shift);
 }

@@ -26,51 +26,39 @@ int main (void) {
                 root_thread_caps,
                 4  // 2^4 entries
         );
+        static struct cap_t * caps_free = root_thread_caps;
         cap_set_thread(
-                root_thread_caps + 0,
+                caps_free,
                 &root_thread
         );
+        caps_free ++;
 
         // ram
-        cap_set_mem(
-                root_thread_caps + 1,
-                (void *)0x20000000,
-                10 + 8,  // size = 2^(10 + 8)B = 256KiB
+        extern const uint32_t end;
+        extern const uint32_t __stack;
+        debug_printk("end %p, __stack %p\n", &end, &__stack);
+        caps_free = mem_add(
+                caps_free, root_thread_caps + 16,
+                &end, &__stack + 1,
                 MEM_PERM_R | MEM_PERM_W | MEM_PERM_X
         );
         mpu_map(
                 &root_thread, 0,
-                root_thread_caps + 1
+                caps_free - 1
         );
 
         // flash
         cap_set_mem(
-                root_thread_caps + 2,
+                caps_free,
                 (void *)0x00000000,
                 10 + 10,  // size = 2^(10 + 10)B = 1MiB
                 MEM_PERM_R | MEM_PERM_X
         );
         mpu_map(
                 &root_thread, 1,
-                root_thread_caps + 2
+                caps_free
         );
-
-        mem_remove(
-                root_thread_caps, root_thread_caps + 16,
-                &kernel, sizeof(kernel)
-        );
-        mem_remove(
-                root_thread_caps, root_thread_caps + 16,
-                &root_thread, sizeof(root_thread)
-        );
-        mem_remove(
-                root_thread_caps, root_thread_caps + 16,
-                root_thread_caps, sizeof(root_thread_caps)
-        );
-        mem_remove(
-                root_thread_caps, root_thread_caps + 16,
-                printk_buffer, sizeof(printk_buffer)
-        );
+        caps_free ++;
 
         kernel_start(&root_thread);
 
