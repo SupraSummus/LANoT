@@ -1,5 +1,6 @@
 #pragma once
 
+#include <assert.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <os4cm4/mem.h>
@@ -42,13 +43,6 @@ static inline void * cap_ptr_get (struct cap_t * cap) {
         return (void *)(cap->ptr << MEM_MIN_SIZE_SHIFT);
 }
 
-//struct ref_t {
-//        uint32_t path : 27;
-//        uint32_t depth : 5;
-//};
-//
-//_Static_assert(sizeof(struct ref_t) == 4);
-
 struct cap_t * cap_find (struct cap_t * root_cap, uint32_t path, unsigned int depth);
 
 bool is_aligned (void const* ptr, unsigned int size_shift);
@@ -64,11 +58,32 @@ void cap_set (
         unsigned int size_shift
 );
 
-void cap_set_cap_table (
-        struct cap_t * cap,
-        struct cap_t * caps,
-        unsigned int entries_shift
-);
+/**
+ * capability table
+ */
+
+static inline void cap_set_cap_table (
+	struct cap_t * cap,
+	struct cap_t * caps,
+	unsigned int entries_shift
+) {
+	cap_set(cap, CAP_TYPE_CAP_TABLE, caps, entries_shift + CAP_SIZE_SHIFT);
+}
+
+static inline struct cap_t * cap__cap_table__caps (struct cap_t * cap) {
+	assert(cap->type == CAP_TYPE_CAP_TABLE);
+	return cap_ptr_get(cap);
+}
+
+static inline unsigned int cap__cap_table__entries_shift (struct cap_t * cap) {
+	assert(cap->type == CAP_TYPE_CAP_TABLE);
+	assert(cap->size_shift >= CAP_SIZE_SHIFT);
+	return cap->size_shift - CAP_SIZE_SHIFT;
+}
+
+/**
+ * thread
+ */
 
 struct thread_t;
 void cap_set_thread (
@@ -76,9 +91,17 @@ void cap_set_thread (
         struct thread_t * thread
 );
 
+/**
+ * memory region
+ */
+
 void cap_set_mem (
         struct cap_t * cap,
-        void const* ptr,
+        void const * ptr,
         unsigned int size_shift,
         unsigned int perms
 );
+
+static inline bool cap_is_mem (struct cap_t const * cap) {
+	return cap->type == CAP_TYPE_MEM;
+}

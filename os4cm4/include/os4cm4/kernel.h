@@ -17,6 +17,10 @@ _Static_assert(sizeof(struct kernel_t) == KERNEL_MEM_SIZE);
 
 extern struct kernel_t kernel;
 
+/**
+ * Initialize the kernel.
+ * Control gets returned to the caller. Caller is now a root_thread and is running under the kernel control.
+ */
 void kernel_start (struct thread_t * root_thread);
 
 /**

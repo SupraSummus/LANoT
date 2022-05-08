@@ -47,18 +47,11 @@ void cap_set (
         assert(cap->type == CAP_TYPE_EMPTY);
         assert(type < CAP_TYPES_COUNT);
         assert(size_shift >= MEM_MIN_SIZE_SHIFT);  // object data is at least 32B long
+        assert(size_shift <= 32);
         assert(is_aligned(object_data, size_shift));
         cap->type = type;
         cap->ptr = (unsigned int)object_data >> MEM_MIN_SIZE_SHIFT;
         cap->size_shift = size_shift;
-}
-
-void cap_set_cap_table (
-        struct cap_t * cap,
-        struct cap_t * caps,
-        unsigned int entries_shift
-) {
-        cap_set(cap, CAP_TYPE_CAP_TABLE, caps, entries_shift + CAP_SIZE_SHIFT);
 }
 
 void cap_set_thread (

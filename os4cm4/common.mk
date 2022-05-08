@@ -29,9 +29,9 @@ OBJECTS := $(addprefix $(BUILD_DIR),$(OBJECTS))
 OBJECTS := $(addsuffix .o,$(OBJECTS))
 OBJECTS := $(abspath $(OBJECTS))
 
-OPENOCD_ROOT := $(OS4CM4_ROOT)../sys/openocd/
-OPENOCD := $(OPENOCD_ROOT)src/openocd
-OPENOCD_SCRIPTS := $(OPENOCD_ROOT)tcl/
+OPENOCD_ROOT := /usr/share/openocd/
+OPENOCD := openocd
+OPENOCD_SCRIPTS := $(OPENOCD_ROOT)scripts/
 OPENOCD_FLAGS := \
 	-s $(OPENOCD_SCRIPTS) \
 	-c "adapter speed 1000" \

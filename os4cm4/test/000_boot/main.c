@@ -7,41 +7,13 @@
 #include <os4cm4/user.h>
 #include <os4cm4/init.h>
 
-struct kernel_t kernel __attribute__ ((aligned (KERNEL_MEM_SIZE)));
-static struct thread_t root_thread __attribute__ ((aligned (THREAD_SIZE)));
-static struct cap_t root_thread_caps[16] __attribute__ ((aligned (16 * CAP_SIZE)));
-char printk_buffer[PRINTK_BUFFER_SIZE];
-
-__attribute__((noreturn))
-static void task (uint32_t a, uint32_t b, uint32_t c, uint32_t d) {
-        printk("thread started, args %i %i %i %i\n", a, b, c, d);
-        yield();
-        printk("thread after yield %i\n", a);
-        kill_me();
-}
+#define ROOT_THREAD_CAP_TABLE_ENTRIES_SHIFT 4  // 2^4 entries
+#include <os4cm4/default_static.c>
 
 int main (void) {
-        cap_set_cap_table(
-                &(root_thread.cap),
-                root_thread_caps,
-                4  // 2^4 entries
-        );
-        static struct cap_t * caps_free = root_thread_caps;
-        cap_set_thread(
-                caps_free,
-                &root_thread
-        );
-        caps_free ++;
+        struct cap_t * caps_free = default_static_init();
 
-        // ram
-        extern const uint32_t end;
-        extern const uint32_t __stack;
-        debug_printk("end %p, __stack %p\n", &end, &__stack);
-        caps_free = mem_add(
-                caps_free, root_thread_caps + 16,
-                &end, &__stack + 1,
-                MEM_PERM_R | MEM_PERM_W | MEM_PERM_X
-        );
+        // last RAM region should be large and it contains the stack - allow RWX
         mpu_map(
                 &root_thread, 0,
                 caps_free - 1
@@ -62,10 +34,26 @@ int main (void) {
 
         kernel_start(&root_thread);
 
-        for (int i = 0; i < 10; i ++) {
-                printk("main task yield\n");
-                yield();
+        // check if default setup procedure allocated all ram
+        int free_ram_size = 0;
+        for (
+                struct cap_t * cap = cap__cap_table__caps(&root_thread.cap);
+                cap < caps_free;
+                cap ++
+        ) {
+                if (cap_is_mem(cap)) {
+                        free_ram_size += 1 << cap->size_shift;
+                }
         }
+        free_ram_size -= 1 << (10 + 10);  // account for flash
+        extern const uint32_t end;
+        extern const uint32_t __stack;
+        printk(
+                "%d\n",
+                free_ram_size - ((uint32_t)&__stack - (uint32_t)&end)
+        );  // should be 0
+
+        printk("done\n");
 
         semihosting_end();
 }

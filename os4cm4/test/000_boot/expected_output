@@ -1,20 +1,2 @@
-main task yield
-thread started, args 0 0 42 0
-thread started, args 1 7 42 0
-thread started, args 2 14 42 0
-thread started, args 3 21 42 0
-thread started, args 4 28 42 0
-main task yield
-thread after yield 0
-thread after yield 1
-thread after yield 2
-thread after yield 3
-thread after yield 4
-main task yield
-main task yield
-main task yield
-main task yield
-main task yield
-main task yield
-main task yield
-main task yield
+0
+done
