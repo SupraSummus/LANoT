@@ -1,11 +1,8 @@
 THIS_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 OS4CM4_ROOT := $(THIS_DIR)../
 
-INCLUDE_DIRS := \
-	$(OS4CM4_ROOT)../sys/include/ \
-
 SOURCES += \
-	$(OS4CM4_ROOT)../sys/modules/semihosting_log/semihosting_log.c \
+	$(OS4CM4_ROOT)src/semihosting_log.c \
 
 include $(OS4CM4_ROOT)os4cm4.mk
 include $(OS4CM4_ROOT)common.mk

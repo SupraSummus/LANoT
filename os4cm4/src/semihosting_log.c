@@ -1,4 +1,4 @@
-#include <lanot/log_backend.h>
+#include <os4cm4/log_backend.h>
 
 static void send_command (int command, void * message) {
 	__asm volatile(
